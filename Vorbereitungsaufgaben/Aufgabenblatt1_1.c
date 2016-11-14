@@ -21,7 +21,7 @@
 #define BLINKBIT 0
 
 
-// propotypes
+// prototypes
 void timer1Init (void);
 
 // --- System Bibliotheken ----------------------------------------------------
@@ -63,9 +63,8 @@ void timer1Init (void) {
 	
 	// Konfigurieren der "Output Compare Units" 
 	// (Vergleich des Z?hlerwertes auf Schwellwert --> Interrupt)
-	OCR1BH = 0x00;		// 0,2*1.000.000 / 1024 = 195 f?r 0,2s
-	OCR1BL = 0xC3;		// 194 -> 0x00C3
-	OCR1A = 977;		// 1.000.000 / 1024 = 977 f?r eine Sekunde 
+	OCR1B = 488;		// 1.000.000 / 1024 / 2 = 477 für 0,5 Sekunden
+	OCR1A = 977;		// 1.000.000 / 1024 = 977 für eine Sekunde 
 	// Nun die relevanten Interrupts aktivieren: Timer Interrupt Mask
 	TIMSK1 = (1<<1);	// Bit 1 ? OCIE1A: Timer/Counter1, Output Compare A Match Interrupt Enable
 	TIMSK1 |= (1<<2);	// Bit 2 ? OCIE1B: Timer/Counter1, Output Compare B Match Interrupt Enable
@@ -82,7 +81,7 @@ void timer1Init (void) {
 /************************************************************************/
 ISR (TIMER1_COMPA_vect) {
 	BLINKPORT |= (1<<BLINKBIT);
-//	BLINKPORT2 &= ~(1<<BLINKBIT);
+	BLINKPORT2 &= ~(1<<BLINKBIT);
 }
 
 /* Compare Interrupt b													*/
@@ -90,5 +89,5 @@ ISR (TIMER1_COMPA_vect) {
 /************************************************************************/
 ISR (TIMER1_COMPB_vect) {
 	BLINKPORT &= ~(1<<BLINKBIT);
-//	BLINKPORT2 |= (1<<BLINKBIT);
+	BLINKPORT2 |= (1<<BLINKBIT);
 }

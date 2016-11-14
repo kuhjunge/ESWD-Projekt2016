@@ -8,12 +8,13 @@
 
 #include <avr/io.h>
 #include <stdlib.h>
-#include <avr/interrupt.h>		// interrupts
+#include <avr/interrupt.h>		// Interrupts
 
-// defines to be used as boolean
+// Definieren von Booleans
 #define FALSE 0
 #define TRUE !FALSE
 
+// Definieren von einzelnen Bits
 #define N0  0x01 
 #define N1  0x02 
 #define N2  0x04 
@@ -23,6 +24,7 @@
 #define N6  0x40 
 #define N7  0x80 
 
+// Definieren von Pins
 #define PINUP 0
 #define PINDOWN 1
 #define PINLEFT 2
@@ -37,13 +39,14 @@
 /************************************************************************/
 typedef enum
 {
-	ende, top, down, left, right
+	ende, up, down, left, right
 
 } muster_t;
 
+//spezielle Anzeigemuster
 typedef enum
 {
-	all, ok, wrong
+	ready, correct, wrong
 
 } blinkseq_t;
 
@@ -51,13 +54,13 @@ muster_t eingMuster = ende;
 muster_t muster[MAXARRAY];
 muster_t checkMuster[MAXARRAY];
 
-
+// 
 unsigned char enterIsPressed = FALSE;
 unsigned char cancelIsPressed = FALSE;
 volatile unsigned char timerIsRinging = FALSE;
 
 unsigned char state = 0; // Speichert den Status der aktuellen Knöpfe
-unsigned int level = 0;
+unsigned int level = 0; 
 unsigned int debug = 0;
 unsigned int randCounter = 0;
 
@@ -87,7 +90,7 @@ void doChange(char pin, int number) {
 		} else {
 			if (number == PINLEFT) {eingMuster = left;}	
 			else if (number == PINRIGHT) {eingMuster = right;}	
-			else if (number == PINUP) {eingMuster = top;}
+			else if (number == PINUP) {eingMuster = up;}
 			else if (number == PINDOWN) {eingMuster = down;}
 			else if (number == PINENTER) {enterIsPressed = TRUE;}
 //				else if (number == PINCANCEL) {}
@@ -102,14 +105,14 @@ void setLED(muster_t m, int on){
 	if (on == TRUE){
 		if (m ==  left) {PORTA |= N6; }
 		else if (m == right) {PORTC |= N6; }
-		else if (m == top) {PORTB |= N5; }
+		else if (m == up) {PORTB |= N5; }
 		else if (m == down) {PORTB |= N7; }
 	}
 	else {
-		if (m == left) {PORTA ^= N6;}
-		else if (m == right) {PORTC ^= N6;}
-		else if (m == top) {PORTB ^= N5;}
-		else if (m == down) {PORTB ^= N7;}
+		if (m == left) {PORTA &= ~N6;}
+		else if (m == right) {PORTC &= ~N6;}
+		else if (m == up) {PORTB &= ~N5;}
+		else if (m == down) {PORTB &= ~N7;}
 	}
 }
 
@@ -149,10 +152,10 @@ ISR (TIMER1_COMPA_vect) {
 }
 
 /************************************************************************/
-/* resetet den Timercounter                                             */
+/* Setzt den Timercounter zurück                                        */
 /************************************************************************/
 void resetWait(){
-	TCNT1 = 0x00;		// Zaehlregister des Timers noch auf Null stellen
+	TCNT1 = 0x00;		// Zaehlregister des Timers auf Null setzen
 }
 
 /************************************************************************/
@@ -162,8 +165,8 @@ void cleanWait(){
 	TCCR1B = 0x08;
 }
 /************************************************************************/
-/* Wartet eine festgelegte Anzahl von Sekunden, zweites Argument		*/
-/* bestimmt ob der Aufruf blockierend ist oder nicht					*/
+/* Wartet eine festgelegte Anzahl von Sekunden,							*/
+/* zweites Argument bestimmt, ob der Aufruf blockierend ist oder nicht	*/
 /************************************************************************/
 void wait(float sec, unsigned char block){
 	timerIsRinging	= FALSE;
@@ -194,7 +197,7 @@ void ShowMuster(muster_t m[]){
 }
 
 /************************************************************************/
-/* Prüft ob sich die Eingabe geändert hat und veranlasst doChange()     */
+/* Prüft, ob sich die Eingabe geändert hat und veranlasst doChange()    */
 /* Via Polling															*/
 /************************************************************************/
 void checkAndDoChange(char pin, int number) {
@@ -207,84 +210,80 @@ void checkAndDoChange(char pin, int number) {
 }
 
 /************************************************************************/
-/* Zeigt ein Startmuster                                                */
+/* Zeigt ein vordefiniertes Muster                                      */
 /************************************************************************/
 void showDefineMuster(blinkseq_t b){
 	int i;
-	if(b == all) {
+	// Muster Bereitschaftsmodus 
+	if(b == ready) {
+		
 		for(i = 0; i < 3; i++) {
-			setLED(top, TRUE);
+			setLED(up, TRUE);
 			setLED(right, TRUE);
 			setLED(down, TRUE);
 			setLED(left, TRUE);
 			
 			wait(1, TRUE);
 			
-			setLED(top, FALSE);
+			setLED(up, FALSE);
 			setLED(right, FALSE);
 			setLED(down, FALSE);
-			setLED(left, FALSE);
+			setLED(left, FALSE);			
 		}
+		
 	}
-	else if(b == ok) {
-		setLED(top, TRUE);
+	// Muster richtige Eingabe
+	else if(b == correct) {
+		
+		setLED(up, TRUE);
 		setLED(right, TRUE);
 		setLED(down, TRUE);
 		setLED(left, TRUE);
 					
 		wait(1.5, TRUE);
 					
-		setLED(top, FALSE);
+		setLED(up, FALSE);
 		setLED(right, FALSE);
 		setLED(down, FALSE);
 		setLED(left, FALSE);
+		
 	}
+	// Muster falsche Eingabe
 	else if(b == wrong) {
-		setLED(top, TRUE);
+		
+		setLED(up, TRUE);
 		setLED(right, FALSE);
 		setLED(down, FALSE);
 		setLED(left, FALSE);
 		
 		wait(0.25, TRUE);
 		
-		setLED(top, FALSE);
+		setLED(up, FALSE);
 		setLED(right, TRUE);
 		setLED(down, FALSE);
 		setLED(left, FALSE);
 		
 		wait(0.25, TRUE);
 		
-		setLED(top, FALSE);
+		setLED(up, FALSE);
 		setLED(right, FALSE);
 		setLED(down, TRUE);
 		setLED(left, FALSE);
 		
 		wait(0.25, TRUE);
 		
-		setLED(top, FALSE);
+		setLED(up, FALSE);
 		setLED(right, FALSE);
 		setLED(down, FALSE);
 		setLED(left, TRUE);
 		
 		wait(0.25, TRUE);
 		
-		setLED(top, FALSE);
+		setLED(up, FALSE);
 		setLED(right, FALSE);
 		setLED(down, FALSE);
 		setLED(left, FALSE);	
-	}
-}
-
-/************************************************************************/
-/*  Blinkt ein paar Sekunden                                            */
-/************************************************************************/
-void blink(int count){
-	int i;
-	for (i=0;i<count;i++){
-		setLED(top, TRUE);
-		wait(1, TRUE);
-		setLED(top, FALSE);
-		wait(1, TRUE);
+		
 	}
 }
 
@@ -304,11 +303,11 @@ void isReadyForGame(void){
 		randCounter++;
     }
 	srand(randCounter);
-	showDefineMuster(all); // Startmuster
+	showDefineMuster(ready);
 }
 
 /************************************************************************/
-/* Prüft ob das Eingabemuster mit dem Ausgabemuster übereinstimmt       */
+/* Prüft, ob das Eingabemuster mit dem Ausgabemuster übereinstimmt      */
 /************************************************************************/
 void auswertung(void){
 	int zaehler = 0;
@@ -326,7 +325,7 @@ void auswertung(void){
 			zaehler++;
 		}
 		if (musterokay == TRUE) {
-			showDefineMuster(ok); // Korrekt
+			showDefineMuster(correct); // Korrekt
 		} else {
 			showDefineMuster(wrong); // Fehler
 			wait(1, TRUE);
@@ -373,7 +372,7 @@ void getEingabe(void){
 }
 
 /************************************************************************/
-/* Generiert ein Muster                                                                     */
+/* Generiert ein zufälliges Muster                                      */
 /************************************************************************/
 void genMuster(int laenge){
 	int i;
@@ -384,7 +383,7 @@ void genMuster(int laenge){
 		switch (r)
 		{
 			case 1:
-			musterTeil = top;
+			musterTeil = up;
 			break;
 		
 			case 2:
@@ -411,17 +410,19 @@ void genMuster(int laenge){
 /* Loop für den "Spiel läuft" Status                                    */
 /************************************************************************/
 void isinGame(void){
-    while(cancelIsPressed == FALSE) //  || wartet nicht länger als 5 Sec 
+    while(cancelIsPressed == FALSE) // wartet nicht länger als 5 Sec 
     {	
 		genMuster(level);
 		ShowMuster(muster); // Zeige Muster mit Pause an (sichtbar)
-		getEingabe(); // sammel die Eingabe vom Nutzer
+		getEingabe(); // Eingabe vom Nutzer erhalten
 		checkAndDoChange(getBit(PINA,PINCANCEL +1), PINCANCEL);
     }
 }
 
+// Hier beginnt die Magie
 int main(void)
 {
+	// Bereit machen
 	DDRA  = N6;			// set lower nibble of PORTA to output
 	PORTA = 0x00;		// all LEDs off
 	DDRB  = N5 | N7;	// set lower nibble of PORTB to output
@@ -429,9 +430,10 @@ int main(void)
 	DDRC  = N6;			// set lower nibble of PORTB to output
 	PORTC = 0x00;		// all LEDs off
 	
+	// Spiel starten
 	while(1)
 	{
 		isReadyForGame();
-		isinGame();
+		isinGame();		
 	}
 }
