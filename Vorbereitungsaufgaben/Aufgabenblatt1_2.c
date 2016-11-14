@@ -102,7 +102,7 @@ void doChange(char pin, int number) {
 /* SetLED(left,TRUE) schaltet die linke LED an 							*/
 /************************************************************************/
 void setLED(muster_t m, int on){
-	if (on == TRUE){
+	if (on){
 		if (m ==  left) {PORTA |= N6; }
 		else if (m == right) {PORTC |= N6; }
 		else if (m == up) {PORTB |= N5; }
@@ -175,8 +175,8 @@ void wait(float sec, unsigned char block){
 	timer1Init(sec);
 	sei();			// Sicherstellen, dass Interrupts wieder an sind
 	
-	while (!timerIsRinging && block == TRUE);
-	if (block == TRUE){
+	while (!timerIsRinging && block);
+	if (block){
 		cleanWait();
 	}
 }
@@ -297,7 +297,7 @@ void isReadyForGame(void){
     {
 		debug = getBit(PINA,PINENTER);
 		checkAndDoChange(debug, PINENTER);
-		if (enterIsPressed == TRUE){
+		if (enterIsPressed){
 			level = 1;
 		}
 		randCounter++;
@@ -324,7 +324,7 @@ void auswertung(void){
 			} 
 			zaehler++;
 		}
-		if (musterokay == TRUE) {
+		if (musterokay) {
 			showDefineMuster(correct); // Korrekt
 		} else {
 			showDefineMuster(wrong); // Fehler
@@ -342,7 +342,7 @@ void getEingabe(void){
 	timerIsRinging = FALSE;
 	wait(5, FALSE);
 //	resetWait();
-	while( cancelIsPressed != TRUE && nextLvl == FALSE)
+	while(!cancelIsPressed && !nextLvl)
 	{
 		enterIsPressed = FALSE;
 		// Lasse Muster vom Spieler eingeben
@@ -357,12 +357,12 @@ void getEingabe(void){
 		}
 		checkAndDoChange(getBit(PINA,PINCANCEL), PINCANCEL);
 		checkAndDoChange(getBit(PINA,PINENTER), PINENTER);
-		if (enterIsPressed == TRUE && timerIsRinging == FALSE){
+		if (enterIsPressed && !timerIsRinging){
 			checkMuster[zeichen] = ende;
 			auswertung(); // TODO, das Auswertungsergebnis irgendwie verwenden
 			nextLvl = TRUE;
 			level++;
-		} else if (timerIsRinging == TRUE) { // länger als 5 sek keine Eingabe, Auswertung (falsch)
+		} else if (timerIsRinging) { // länger als 5 sek keine Eingabe, Auswertung (falsch)
 			checkMuster[0] = ende;
 			auswertung();
 			cancelIsPressed = TRUE;
@@ -410,7 +410,7 @@ void genMuster(int laenge){
 /* Loop für den "Spiel läuft" Status                                    */
 /************************************************************************/
 void isinGame(void){
-    while(cancelIsPressed == FALSE) // wartet nicht länger als 5 Sec 
+    while(!cancelIsPressed) // wartet nicht länger als 5 Sec 
     {	
 		genMuster(level);
 		ShowMuster(muster); // Zeige Muster mit Pause an (sichtbar)
