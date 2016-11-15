@@ -250,7 +250,7 @@ void showDefineMuster(blinkseq_t b){
 		setLED(down, FALSE);
 		setLED(left, FALSE);
 		
-		wait(0.5, TRUE);
+		wait(1.5, TRUE);
 		
 	}
 	// Muster falsche Eingabe
@@ -354,7 +354,7 @@ int auswertung(){
 /* Liest die Eingabe des Nutzers                                        */
 /************************************************************************/
 void getEingabe(){
-	int zeichen = 0; // anzahl Muster Zähler
+	int eingabeZaehler = 0; // anzahl Muster Zähler
 	int nextLvl = FALSE;
 	timerIsRinging = FALSE;
 	cancelIsPressed = FALSE;
@@ -362,21 +362,23 @@ void getEingabe(){
 //	resetWait();
 	while(!cancelIsPressed && !nextLvl)
 	{
-		enterIsPressed = FALSE;
 		// Lasse Muster vom Spieler eingeben
 		checkAndDoChange(getBit(PINA,PINUP), PINUP);
 		checkAndDoChange(getBit(PINA,PINDOWN), PINDOWN);
 		checkAndDoChange(getBit(PINA,PINLEFT), PINLEFT);
 		checkAndDoChange(getBit(PINA,PINRIGHT), PINRIGHT);
 		if (eingMuster != ende){
-			checkMuster[zeichen] =  eingMuster; //checkMuster[0] =  'Benutzereingabe'
+			checkMuster[eingabeZaehler] =  eingMuster; //checkMuster[0] =  'Benutzereingabe'
 			eingMuster = ende;
-			if (MAXARRAY > zeichen) {zeichen++; }
+			if (MAXARRAY > eingabeZaehler) 
+			{
+				eingabeZaehler++; 
+			}
 		}
 		checkAndDoChange(getBit(PINA,PINCANCEL), PINCANCEL);
-		checkAndDoChange(getBit(PINA,PINENTER), PINENTER);
-		if (enterIsPressed && !timerIsRinging){
-			checkMuster[zeichen] = ende;
+		if (eingabeZaehler >= level && !timerIsRinging){
+			wait(0.25,TRUE);
+			checkMuster[eingabeZaehler] = ende;
 			if(auswertung())
 			{ 
 				nextLvl = TRUE;
@@ -395,6 +397,7 @@ void getEingabe(){
 		// TODO Nach Auswertung ->  Ausgabe von level (anzahl der Muster) + nextLvl = TRUE;
 	}
 	if (cancelIsPressed == TRUE) {
+		wait(0.5, TRUE);
 		checkMuster[0] = ende;
 		showDefineMuster(wrong);
 	}
