@@ -50,7 +50,7 @@ char getBit(char id, int position)
 /************************************************************************/
 /* Initialisieren von Timer1.                                           */
 /************************************************************************/
-void timer1Init () {
+void timer1Init (float sec) {
 	// Taktquelle ist per Default der Systemtakt, Asynchrones Verhalten
 	// wird in separatem ASSR ? Asynchronous Status Register konfiguriert
 
@@ -66,30 +66,12 @@ void timer1Init () {
 	// (Vergleich des Zaehlerwertes auf Schwellwert --> Interrupt)
 	//	OCR1BH = 0x00;		// 0,2*1.000.000 / 1024 = 195 fuer 0,2s (overflow compare)
 	//	OCR1BL = 0xC3;		// 194 -> 0x00C3
-	OCR1A = 977 * 0.5;		// 1.000.000 / 1024 = 977 fuer eine Sekunde
+	OCR1A = 977 * sec;		// 1.000.000 / 1024 = 977 fuer eine Sekunde
 	// Nun die relevanten Interrupts aktivieren: Timer Interrupt Mask
 	TIMSK1 = (1<<1);	// Bit 1 ? OCIE1A: Timer/Counter1, Output Compare A Match Interrupt Enable
 	//	TIMSK1 |= (1<<2);	// Bit 2 ? OCIE1B: Timer/Counter1, Output Compare B Match Interrupt Enable
 	
 	TCNT1 = 0x00;		// Zaehlregister des Timers noch auf Null stellen
-}
-
-/************************************************************************/
-/* Stopt den Timer                                                      */
-/************************************************************************/
-void timer1Stop(){
-	TCCR1B = 0x08;
-}
-
-void wait(){
-	timerIsRinging	= FALSE;
-	
-	cli();			// vor dem Initialisieren Interrupts aus!
-	timer1Init();
-	sei();			// Sicherstellen, dass Interrupts wieder an sind
-	
-	while (!timerIsRinging);
-	timer1Stop();
 }
 
 /************************************************************************/
@@ -100,6 +82,35 @@ ISR (TIMER1_COMPA_vect) {
 	timerIsRinging = TRUE;
 }
 
+/************************************************************************/
+/* Setzt den Timercounter zurück                                        */
+/************************************************************************/
+void resetWait(){
+	TCNT1 = 0x00;		// Zaehlregister des Timers auf Null setzen
+}
+
+/************************************************************************/
+/* Stopt den Timer                                                      */
+/************************************************************************/
+void cleanWait(){
+	TCCR1B = 0x08;
+}
+/************************************************************************/
+/* Wartet eine festgelegte Anzahl von Sekunden,							*/
+/* zweites Argument bestimmt, ob der Aufruf blockierend ist oder nicht	*/
+/************************************************************************/
+void wait(float sec, unsigned char block){
+	timerIsRinging	= FALSE;
+	
+	cli();			// vor dem Initialisieren Interrupts aus!
+	timer1Init(sec);
+	sei();			// Sicherstellen, dass Interrupts wieder an sind
+	
+	while (!timerIsRinging && block);
+	if (block){
+		cleanWait();
+	}
+}
 void changeButton(char id, int position, int changeVal){
 	bit = getBit(id, position);
 	if (bit == 1){
@@ -108,7 +119,15 @@ void changeButton(char id, int position, int changeVal){
 }
 
 void showVal(void){
-	PORTA = state;
+	if (state > 0){
+		PORTA = state;
+		resetWait();
+	} else {
+		if (timerIsRinging == TRUE){
+			PORTA = state;	
+		}
+	}
+	
 }
 
 int main(void)
@@ -117,7 +136,7 @@ int main(void)
 	PORTA = 0x00;		// all LEDs off
 	DDRC  = 0xF0;			// PORTC to input /output
 	PORTC = 0x00;		// all LEDs off
-	
+	wait(0.5);
 	while(1)
 	{
 		// PC4 = OUT
