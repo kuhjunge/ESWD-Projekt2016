@@ -26,27 +26,27 @@
 
 // Definieren von Pins
 #define PINUP 0
-#define PINDOWN 1
-#define PINLEFT 2
-#define PINRIGHT 3
+#define PINLEFT 1
+#define PINRIGHT 2
+#define PINDOWN 3
 #define PINENTER 4
 #define PINCANCEL 5
 
-#define MAXARRAY 42
+#define MAXARRAY 64 // Max. Level = 63
 
 /************************************************************************/
 /* Variablen für das Muster                                             */
 /************************************************************************/
 typedef enum
 {
-	ende, up, down, left, right
+	ende, up, left, right, down
 
 } muster_t;
 
 //spezielle Anzeigemuster
 typedef enum
 {
-	ready, correct, wrong
+	ready, correct, wrong, stage
 
 } blinkseq_t;
 
@@ -184,13 +184,13 @@ void wait(float sec, unsigned char block){
 /************************************************************************/
 /* gibt ein Muster aus mit einer Sek verzögerung zwischen den Zeichen	*/
 /************************************************************************/
-void ShowMuster(muster_t m[]){
+void showMuster(muster_t m[]){
 	int zaehler = 0;
 	while (m[zaehler] != ende)
 	{
 		setLED(m[zaehler],TRUE);
 		wait(1, TRUE);
-		cleanWait();
+		cleanWait(); // Nötig?!?
 		setLED(m[zaehler],FALSE);
 		zaehler++;
 	}
@@ -285,6 +285,9 @@ void showDefineMuster(blinkseq_t b){
 		setLED(left, FALSE);	
 		
 	}
+	else if(b == stage) {
+		PORTD = level;
+	}
 }
 
 /************************************************************************/
@@ -293,6 +296,8 @@ void showDefineMuster(blinkseq_t b){
 void isReadyForGame(void){
 	cancelIsPressed = FALSE;
 	level = 0;
+	showDefineMuster(stage);
+	showDefineMuster(ready);
 	while(level < 1) // Springt weiter nachdem ENTER losgelassen (!) wird
     {
 		debug = getBit(PINA,PINENTER);
@@ -303,13 +308,13 @@ void isReadyForGame(void){
 		randCounter++;
     }
 	srand(randCounter);
-	showDefineMuster(ready);
+	
 }
 
 /************************************************************************/
 /* Prüft, ob das Eingabemuster mit dem Ausgabemuster übereinstimmt      */
 /************************************************************************/
-void auswertung(void){
+int auswertung(){
 	int zaehler = 0;
 	int musterokay = TRUE;
 	if (checkMuster[0] == ende){
@@ -326,9 +331,11 @@ void auswertung(void){
 		}
 		if (musterokay) {
 			showDefineMuster(correct); // Korrekt
+			return TRUE;
 		} else {
 			showDefineMuster(wrong); // Fehler
-			wait(1, TRUE);
+			return FALSE;
+			//wait(1, TRUE);
 		}
 	}
 }
@@ -336,7 +343,7 @@ void auswertung(void){
 /************************************************************************/
 /* Liest die Eingabe des Nutzers                                        */
 /************************************************************************/
-void getEingabe(void){
+void getEingabe(){
 	int zeichen = 0; // anzahl Muster Zähler
 	int nextLvl = FALSE;
 	timerIsRinging = FALSE;
@@ -349,9 +356,9 @@ void getEingabe(void){
 		checkAndDoChange(getBit(PINA,PINUP), PINUP);
 		checkAndDoChange(getBit(PINA,PINDOWN), PINDOWN);
 		checkAndDoChange(getBit(PINA,PINLEFT), PINLEFT);
-		checkAndDoChange(getBit(PINA,PINDOWN), PINDOWN);
+		checkAndDoChange(getBit(PINA,PINRIGHT), PINRIGHT);
 		if (eingMuster != ende){
-			checkMuster[zeichen] =  eingMuster; //checkMuster[0] =  'Benuztereingabe'
+			checkMuster[zeichen] =  eingMuster; //checkMuster[0] =  'Benutzereingabe'
 			eingMuster = ende;
 			if (MAXARRAY > zeichen) {zeichen++; }
 		}
@@ -359,12 +366,19 @@ void getEingabe(void){
 		checkAndDoChange(getBit(PINA,PINENTER), PINENTER);
 		if (enterIsPressed && !timerIsRinging){
 			checkMuster[zeichen] = ende;
-			auswertung(); // TODO, das Auswertungsergebnis irgendwie verwenden
-			nextLvl = TRUE;
-			level++;
+			if(auswertung()) // TODO, das Auswertungsergebnis irgendwie verwenden >>?!?<<
+			{ 
+				nextLvl = TRUE;
+				level++;
+				int i;
+				for(i = 0; i < MAXARRAY; i++) {
+					checkMuster[i] = ende;
+				}
+			}
+			else cancelIsPressed = TRUE;
 		} else if (timerIsRinging) { // länger als 5 sek keine Eingabe, Auswertung (falsch)
 			checkMuster[0] = ende;
-			auswertung();
+			//auswertung();
 			cancelIsPressed = TRUE;
 		}
 		// TODO Nach Auswertung ->  Ausgabe von level (anzahl der Muster) + nextLvl = TRUE;
@@ -374,37 +388,44 @@ void getEingabe(void){
 /************************************************************************/
 /* Generiert ein zufälliges Muster                                      */
 /************************************************************************/
-void genMuster(int laenge){
-	int i;
-	muster_t musterTeil = ende;
+muster_t genMuster(){
+	muster_t musterTeilNeu = ende;
+	int counter;
 	
-	for (i = 0; i < laenge; i++) {
-		int r = rand() % 4 + 1;
+	for(counter = 0; counter < MAXARRAY; counter++) {
+		if(muster[counter] == ende)
+			break;
+	}
+	
+	if(counter < (MAXARRAY-1))
+	{
+		int r = rand() % 4;
 		switch (r)
 		{
+			case 0:
+			musterTeilNeu = up;
+			break;
+			
 			case 1:
-			musterTeil = up;
+			musterTeilNeu = left;
 			break;
-		
+			
 			case 2:
-			musterTeil = down;
+			musterTeilNeu = right;
 			break;
-		
+			
 			case 3:
-			musterTeil = left;
+			musterTeilNeu = down;
 			break;
-		
-			case 4:
-			musterTeil = right;
-			break;
-		
+			
 			default:
 			break;
 		}
-		muster[i] = musterTeil;	
+		muster[counter] = musterTeilNeu;
+		muster[counter+1] = ende;
 	}
-	muster[i+1] = ende;
 }
+
 
 /************************************************************************/
 /* Loop für den "Spiel läuft" Status                                    */
@@ -412,8 +433,9 @@ void genMuster(int laenge){
 void isinGame(void){
     while(!cancelIsPressed) // wartet nicht länger als 5 Sec 
     {	
-		genMuster(level);
-		ShowMuster(muster); // Zeige Muster mit Pause an (sichtbar)
+		showDefineMuster(stage);
+		genMuster();
+		showMuster(muster); // Zeige Muster mit Pause an (sichtbar)
 		getEingabe(); // Eingabe vom Nutzer erhalten
 		checkAndDoChange(getBit(PINA,PINCANCEL +1), PINCANCEL);
     }
@@ -423,17 +445,23 @@ void isinGame(void){
 int main(void)
 {
 	// Bereit machen
-	DDRA  = N6;			// set lower nibble of PORTA to output
+	DDRA  = N6;			// set Pin 6 of PORTA to output
 	PORTA = 0x00;		// all LEDs off
-	DDRB  = N5 | N7;	// set lower nibble of PORTB to output
+	DDRB  = N5 | N7;	// set Pin 5 and 7 of PORTB to output
 	PORTB = 0x00;		// all LEDs off
-	DDRC  = N6;			// set lower nibble of PORTB to output
+	DDRC  = N6;			// set Pin 6 of PORTB to output
 	PORTC = 0x00;		// all LEDs off
+	DDRD  = 0x3F;		// set Pins 0 - 5 of PORTD to output
+	PORTD = 0x00;		// all LEDs off
 	
 	// Spiel starten
 	while(1)
 	{
 		isReadyForGame();
 		isinGame();		
+		int i;
+		for(i = 0; i < MAXARRAY; i++) {
+			muster[i] = ende;
+		}
 	}
 }
