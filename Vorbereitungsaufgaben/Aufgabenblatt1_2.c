@@ -193,6 +193,7 @@ void showMuster(muster_t m[]){
 		cleanWait(); // Nötig?!?
 		setLED(m[zaehler],FALSE);
 		zaehler++;
+		wait(0.25,TRUE);
 	}
 }
 
@@ -228,7 +229,9 @@ void showDefineMuster(blinkseq_t b){
 			setLED(up, FALSE);
 			setLED(right, FALSE);
 			setLED(down, FALSE);
-			setLED(left, FALSE);			
+			setLED(left, FALSE);
+			
+			wait(1, TRUE);		
 		}
 		
 	}
@@ -240,12 +243,14 @@ void showDefineMuster(blinkseq_t b){
 		setLED(down, TRUE);
 		setLED(left, TRUE);
 					
-		wait(1.5, TRUE);
+		wait(1, TRUE);
 					
 		setLED(up, FALSE);
 		setLED(right, FALSE);
 		setLED(down, FALSE);
 		setLED(left, FALSE);
+		
+		wait(0.5, TRUE);
 		
 	}
 	// Muster falsche Eingabe
@@ -282,7 +287,9 @@ void showDefineMuster(blinkseq_t b){
 		setLED(up, FALSE);
 		setLED(right, FALSE);
 		setLED(down, FALSE);
-		setLED(left, FALSE);	
+		setLED(left, FALSE);
+		
+		wait(0.25, TRUE);
 		
 	}
 	else if(b == stage) {
@@ -295,19 +302,21 @@ void showDefineMuster(blinkseq_t b){
 /************************************************************************/
 void isReadyForGame(void){
 	cancelIsPressed = FALSE;
+	enterIsPressed = FALSE;
 	level = 0;
 	showDefineMuster(stage);
 	showDefineMuster(ready);
 	while(level < 1) // Springt weiter nachdem ENTER losgelassen (!) wird
     {
-		debug = getBit(PINA,PINENTER);
-		checkAndDoChange(debug, PINENTER);
+		//debug = getBit(PINA,PINENTER);
+		checkAndDoChange(getBit(PINA,PINENTER), PINENTER);
 		if (enterIsPressed){
 			level = 1;
 		}
 		randCounter++;
     }
 	srand(randCounter);
+	wait(0.75, TRUE);
 	
 }
 
@@ -318,8 +327,9 @@ int auswertung(){
 	int zaehler = 0;
 	int musterokay = TRUE;
 	if (checkMuster[0] == ende){
-		showDefineMuster(wrong); // Fehler
+		//showDefineMuster(wrong); // Fehler
 		wait(1, TRUE);
+		return FALSE;
 	} else {
 		while (muster[zaehler] != ende && checkMuster[zaehler] != ende)
 		{
@@ -329,11 +339,11 @@ int auswertung(){
 			} 
 			zaehler++;
 		}
-		if (musterokay) {
+		if (musterokay && checkMuster[zaehler] == ende && muster[zaehler] == ende) {
 			showDefineMuster(correct); // Korrekt
 			return TRUE;
 		} else {
-			showDefineMuster(wrong); // Fehler
+			//showDefineMuster(wrong); // Fehler
 			return FALSE;
 			//wait(1, TRUE);
 		}
@@ -347,6 +357,7 @@ void getEingabe(){
 	int zeichen = 0; // anzahl Muster Zähler
 	int nextLvl = FALSE;
 	timerIsRinging = FALSE;
+	cancelIsPressed = FALSE;
 	wait(5, FALSE);
 //	resetWait();
 	while(!cancelIsPressed && !nextLvl)
@@ -366,7 +377,7 @@ void getEingabe(){
 		checkAndDoChange(getBit(PINA,PINENTER), PINENTER);
 		if (enterIsPressed && !timerIsRinging){
 			checkMuster[zeichen] = ende;
-			if(auswertung()) // TODO, das Auswertungsergebnis irgendwie verwenden >>?!?<<
+			if(auswertung())
 			{ 
 				nextLvl = TRUE;
 				level++;
@@ -375,13 +386,17 @@ void getEingabe(){
 					checkMuster[i] = ende;
 				}
 			}
-			else cancelIsPressed = TRUE;
+			else {
+				cancelIsPressed = TRUE;
+			}
 		} else if (timerIsRinging) { // länger als 5 sek keine Eingabe, Auswertung (falsch)
-			checkMuster[0] = ende;
-			//auswertung();
 			cancelIsPressed = TRUE;
 		}
 		// TODO Nach Auswertung ->  Ausgabe von level (anzahl der Muster) + nextLvl = TRUE;
+	}
+	if (cancelIsPressed == TRUE) {
+		checkMuster[0] = ende;
+		showDefineMuster(wrong);
 	}
 }
 
@@ -444,6 +459,7 @@ void isinGame(void){
 // Hier beginnt die Magie
 int main(void)
 {
+	int i;
 	// Bereit machen
 	DDRA  = N6;			// set Pin 6 of PORTA to output
 	PORTA = 0x00;		// all LEDs off
@@ -459,7 +475,6 @@ int main(void)
 	{
 		isReadyForGame();
 		isinGame();		
-		int i;
 		for(i = 0; i < MAXARRAY; i++) {
 			muster[i] = ende;
 		}
