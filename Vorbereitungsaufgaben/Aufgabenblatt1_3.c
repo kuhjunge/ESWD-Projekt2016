@@ -17,6 +17,7 @@
 #define N1  0x02 
 #define N2  0x04 
 #define N3  0x08 
+
 #define N4  0x10 
 #define N5  0x20 
 #define N6  0x40 
@@ -43,8 +44,8 @@ char toggleBit(char var, char n, char x)
 /************************************************************************/
 char getBit(char id, int position)
 {
-	// return id & (1 << position); // NULL or NON ZERO
-   return (id >> position) & 1;
+	//return PINC & (1 << position); // NULL or NON ZERO
+   return (PINC >> position) & 1;
 }
 
 /************************************************************************/
@@ -134,9 +135,9 @@ int main(void)
 {
 	DDRA  = 0xFF;		// PORTA to output
 	PORTA = 0x00;		// all LEDs off
-	DDRC  = 0xF0;			// PORTC to input /output
+	DDRC  = 0xF0;		// PORTC to input /output
 	PORTC = 0x00;		// all LEDs off
-	wait(0.5);
+	wait(0.5, FALSE);
 	while(1)
 	{
 		// PC4 = OUT
