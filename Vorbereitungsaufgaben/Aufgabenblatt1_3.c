@@ -44,8 +44,9 @@ char toggleBit(char var, char n, char x)
 /************************************************************************/
 char getBit(char id, int position)
 {
-	//return PINC & (1 << position); // NULL or NON ZERO
-   return (PINC >> position) & 1;
+   //return id & (1 << position); // NULL or NON ZERO
+   //return (PINC >> position) & 1;
+   return (id & position) == position;
 }
 
 /************************************************************************/
@@ -135,7 +136,7 @@ int main(void)
 {
 	DDRA  = 0xFF;		// PORTA to output
 	PORTA = 0x00;		// all LEDs off
-	DDRC  = 0xF0;		// PORTC to input /output
+	DDRC  = 0x00;		// PORTC to input /output
 	PORTC = 0x00;		// all LEDs off
 	wait(0.5, FALSE);
 	while(1)
@@ -143,32 +144,36 @@ int main(void)
 		// PC4 = OUT
 		// && PC0 = 1  0x01| PC1 = 2 0x02 | PC2 = 3 0x03  | PC3 = A 0x0A 
 		state = 0; 
-		PORTC = N4;
-			changeButton(PORTC, N0, 0x01);
-			changeButton(PORTC, N1, 0x02);
-			changeButton(PORTC, N2, 0x03);
-			changeButton(PORTC, N3, 0x0A);
+		DDRC = 0xF1;
+			changeButton(PINC, N0, 0x01);
+			changeButton(PINC, N1, 0x02);
+			changeButton(PINC, N2, 0x03);
+			changeButton(PINC, N3, 0x0A);		
 		// PC5 = OUT
 		// && PC0 = 4 0x04 | PC1 = 5 0x05 | PC2 = 6 0x06 | PC3 = B 0x0B 
-		PORTC = N5;
-			changeButton(PORTC, N0, 0x04);
-			changeButton(PORTC, N1, 0x05);
-			changeButton(PORTC, N2, 0x06);
-			changeButton(PORTC, N3, 0x0B);
+		DDRC = 0xF2;
+		//PORTC = N5;
+			changeButton(PINC, N0, 0x04);
+			changeButton(PINC, N1, 0x05);
+			changeButton(PINC, N2, 0x06);
+			changeButton(PINC, N3, 0x0B);
 		// PC6 = OUT
 		// && PC0 = 7 0x07 | PC1 = 8 0x08 | PC2 = 9 0x09 | PC3 = C 0x0C 
-		PORTC = N6;
-			changeButton(PORTC, N0, 0x07);
-			changeButton(PORTC, N1, 0x08);
-			changeButton(PORTC, N2, 0x09);
-			changeButton(PORTC, N3, 0x0C);
+		DDRC = 0xF4;
+		//PORTC = N6;
+			changeButton(PINC, N0, 0x07);
+			changeButton(PINC, N1, 0x08);
+			changeButton(PINC, N2, 0x09);
+			changeButton(PINC, N3, 0x0C);
 		// PC7 = OUT
 		// && PC0 = E 0x0E | PC1 = 10 (A) 0x0A  | PC2 = F 0x0F  | PC3 = D 0x0D 
-		PORTC = N7;
-			changeButton(PORTC, N0, 0x0E);
-			changeButton(PORTC, N1, 0x0A);
-			changeButton(PORTC, N2, 0x0F);
-			changeButton(PORTC, N3, 0x0D);
+		DDRC = 0xF8;
+		//PORTC = N7;
+			changeButton(PINC, N0, 0x0E);
+			changeButton(PINC, N1, 0x0A);
+			changeButton(PINC, N2, 0x0F);
+			changeButton(PINC, N3, 0x0D);
+		DDRC = 0xF0;
 		showVal();
 	}
 }
