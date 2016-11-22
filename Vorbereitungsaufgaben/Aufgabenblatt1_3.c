@@ -8,6 +8,7 @@
 #include <avr/io.h>
 #include <stdlib.h>
 #include <avr/interrupt.h>		// interrupts
+#include <util/delay.h>
 
 // defines to be used as boolean
 #define FALSE 0
@@ -34,21 +35,12 @@ volatile unsigned char timerIsRinging = FALSE;
 
 
 /************************************************************************/
-/* Wechselt die Wertigkeit eines bestimmten Bits im Char                */
-/************************************************************************/
-char toggleBit(char var, char n, char x)
-{
-	return var ^= (-x ^ var) & (1 << n);
-}
-
-
-/************************************************************************/
 /* Gibt das Bit einer bestimmten Stelle im Char zurück                  */
 /************************************************************************/
 char getBit(char id, int position)
 {
-   //return id & (1 << position) == position; // NULL or NON ZERO
-   //return (PINC >> position) & 1;
+   //return (id & (1 << position)) == position; // NULL or NON ZERO
+   //return (id >> position) & 1;
    return (id & position) == position;
 }
 
@@ -124,7 +116,6 @@ void wait(float sec, unsigned char block){
 }
 void changeButton(char id, int position, int changeVal){
 	bit = getBit(id, position);
-	PORTB = bit; // Debug, Show Bit Value at Port B
 	if (bit == 1){
 		state += changeVal;
 	} 
@@ -136,7 +127,8 @@ void showVal(void){
 		resetWait();
 	} else {
 		if (timerIsRinging == TRUE){
-			PORTA = state;	
+			PORTA = state;		
+			timerIsRinging = FALSE;		
 		}
 	}
 	
@@ -146,39 +138,47 @@ int main(void)
 {
 	DDRA  = 0xFF;		// PORTA = Output
 	PORTA = 0x00;		// all LEDs off
-	DDRB  = 0xFF;		// PORTB = Output
-	PORTB = 0x00;		// all LEDs off
 	DDRC  = 0xF0;		// PC4 - PC7 = Output,     PC0 - PC3 = Input
-	PORTC = 0xF0;		// PC4 - PC7 = High Level, PC0 - PC4 = TRISTATE
-	wait(0.5, FALSE);
+	PORTC = 0x00;		// PC0 - PC7 = TRISTATE
+	wait(1, FALSE);
 	while(1)
 	{
-		state = 0x00; 
-		PORTC = 0xF1; // PC0 = Input
+		
+		state = 0x00;
+		DDRC = N4;
+		PORTC = N4; // PC4 = Input
+		_delay_ms(1);
 			changeButton(PINC, N0, 0x01);
 			changeButton(PINC, N1, 0x02);
 			changeButton(PINC, N2, 0x03);
-			changeButton(PINC, N3, 0x0A);		
-
-		PORTC = 0xF2; // PC1 = Input
+			changeButton(PINC, N3, 0x0A);
+		
+		DDRC = N5;
+		PORTC = N5; // PC5 = Input
+		_delay_ms(1);
 			changeButton(PINC, N0, 0x04);
 			changeButton(PINC, N1, 0x05);
 			changeButton(PINC, N2, 0x06);
 			changeButton(PINC, N3, 0x0B);
 
-		PORTC = 0xF4; // PC2 = Input
+		DDRC = N6;
+		PORTC = N6; // PC6 = Input
+		_delay_ms(1);
 			changeButton(PINC, N0, 0x07);
 			changeButton(PINC, N1, 0x08);
 			changeButton(PINC, N2, 0x09);
 			changeButton(PINC, N3, 0x0C);
 
-		PORTC = 0xF8; // PC3 = Input
+		DDRC = N7;
+		PORTC = N7; // PC7 = Input
+		_delay_ms(1);
 			changeButton(PINC, N0, 0x0E);
-			changeButton(PINC, N1, 0x0A);
+			changeButton(PINC, N1, 0x10);
 			changeButton(PINC, N2, 0x0F);
 			changeButton(PINC, N3, 0x0D);
 			
-		PORTC = 0xF0; // PC0 - PC4 = TRISTATE
+		//PORTC = 0xF0; // PC0 - PC4 = TRISTATE
 		showVal();
+		_delay_ms(10);
 	}
 }
