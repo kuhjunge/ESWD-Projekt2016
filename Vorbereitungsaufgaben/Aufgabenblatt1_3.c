@@ -26,10 +26,12 @@
 unsigned char state = 0; // Speichert den Status der aktuellen Knöpfe
 unsigned char bit = 0;
 
+
 /************************************************************************/
 /* Variablen für den Timer	                                            */
 /************************************************************************/
 volatile unsigned char timerIsRinging = FALSE;
+
 
 /************************************************************************/
 /* Wechselt die Wertigkeit eines bestimmten Bits im Char                */
@@ -39,15 +41,17 @@ char toggleBit(char var, char n, char x)
 	return var ^= (-x ^ var) & (1 << n);
 }
 
+
 /************************************************************************/
 /* Gibt das Bit einer bestimmten Stelle im Char zurück                  */
 /************************************************************************/
 char getBit(char id, int position)
 {
-   //return id & (1 << position); // NULL or NON ZERO
+   //return id & (1 << position) == position; // NULL or NON ZERO
    //return (PINC >> position) & 1;
    return (id & position) == position;
 }
+
 
 /************************************************************************/
 /* Initialisieren von Timer1.                                           */
@@ -76,6 +80,7 @@ void timer1Init (float sec) {
 	TCNT1 = 0x00;		// Zaehlregister des Timers noch auf Null stellen
 }
 
+
 /************************************************************************/
 /* Compare Interrupt A													*/
 /* schaltet die PortA-LED ein und die Port B - LED aus					*/
@@ -84,6 +89,7 @@ ISR (TIMER1_COMPA_vect) {
 	timerIsRinging = TRUE;
 }
 
+
 /************************************************************************/
 /* Setzt den Timercounter zurück                                        */
 /************************************************************************/
@@ -91,12 +97,15 @@ void resetWait(){
 	TCNT1 = 0x00;		// Zaehlregister des Timers auf Null setzen
 }
 
+
 /************************************************************************/
 /* Stopt den Timer                                                      */
 /************************************************************************/
 void cleanWait(){
 	TCCR1B = 0x08;
 }
+
+
 /************************************************************************/
 /* Wartet eine festgelegte Anzahl von Sekunden,							*/
 /* zweites Argument bestimmt, ob der Aufruf blockierend ist oder nicht	*/
@@ -115,6 +124,7 @@ void wait(float sec, unsigned char block){
 }
 void changeButton(char id, int position, int changeVal){
 	bit = getBit(id, position);
+	PORTB = bit; // Debug, Show Bit Value at Port B
 	if (bit == 1){
 		state += changeVal;
 	} 
@@ -134,46 +144,41 @@ void showVal(void){
 
 int main(void)
 {
-	DDRA  = 0xFF;		// PORTA to output
+	DDRA  = 0xFF;		// PORTA = Output
 	PORTA = 0x00;		// all LEDs off
-	DDRC  = 0x00;		// PORTC to input /output
-	PORTC = 0x00;		// all LEDs off
+	DDRB  = 0xFF;		// PORTB = Output
+	PORTB = 0x00;		// all LEDs off
+	DDRC  = 0xF0;		// PC4 - PC7 = Output,     PC0 - PC3 = Input
+	PORTC = 0xF0;		// PC4 - PC7 = High Level, PC0 - PC4 = TRISTATE
 	wait(0.5, FALSE);
 	while(1)
 	{
-		// PC4 = OUT
-		// && PC0 = 1  0x01| PC1 = 2 0x02 | PC2 = 3 0x03  | PC3 = A 0x0A 
-		state = 0; 
-		DDRC = 0xF1;
+		state = 0x00; 
+		PORTC = 0xF1; // PC0 = Input
 			changeButton(PINC, N0, 0x01);
 			changeButton(PINC, N1, 0x02);
 			changeButton(PINC, N2, 0x03);
 			changeButton(PINC, N3, 0x0A);		
-		// PC5 = OUT
-		// && PC0 = 4 0x04 | PC1 = 5 0x05 | PC2 = 6 0x06 | PC3 = B 0x0B 
-		DDRC = 0xF2;
-		//PORTC = N5;
+
+		PORTC = 0xF2; // PC1 = Input
 			changeButton(PINC, N0, 0x04);
 			changeButton(PINC, N1, 0x05);
 			changeButton(PINC, N2, 0x06);
 			changeButton(PINC, N3, 0x0B);
-		// PC6 = OUT
-		// && PC0 = 7 0x07 | PC1 = 8 0x08 | PC2 = 9 0x09 | PC3 = C 0x0C 
-		DDRC = 0xF4;
-		//PORTC = N6;
+
+		PORTC = 0xF4; // PC2 = Input
 			changeButton(PINC, N0, 0x07);
 			changeButton(PINC, N1, 0x08);
 			changeButton(PINC, N2, 0x09);
 			changeButton(PINC, N3, 0x0C);
-		// PC7 = OUT
-		// && PC0 = E 0x0E | PC1 = 10 (A) 0x0A  | PC2 = F 0x0F  | PC3 = D 0x0D 
-		DDRC = 0xF8;
-		//PORTC = N7;
+
+		PORTC = 0xF8; // PC3 = Input
 			changeButton(PINC, N0, 0x0E);
 			changeButton(PINC, N1, 0x0A);
 			changeButton(PINC, N2, 0x0F);
 			changeButton(PINC, N3, 0x0D);
-		DDRC = 0xF0;
+			
+		PORTC = 0xF0; // PC0 - PC4 = TRISTATE
 		showVal();
 	}
 }
