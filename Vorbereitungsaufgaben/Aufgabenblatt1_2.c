@@ -354,7 +354,7 @@ int auswertung(){
 /* Liest die Eingabe des Nutzers                                        */
 /************************************************************************/
 void getEingabe(){
-	int eingabeZaehler = 0; // anzahl Muster Zähler
+	unsigned int eingabeZaehler = 0; // anzahl Muster Zähler
 	int nextLvl = FALSE;
 	timerIsRinging = FALSE;
 	cancelIsPressed = FALSE;
@@ -406,7 +406,7 @@ void getEingabe(){
 /************************************************************************/
 /* Generiert ein zufälliges Muster                                      */
 /************************************************************************/
-muster_t genMuster(){
+void genMuster(){
 	muster_t musterTeilNeu = ende;
 	int counter;
 	
