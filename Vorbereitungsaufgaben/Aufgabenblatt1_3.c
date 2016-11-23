@@ -39,8 +39,6 @@ volatile unsigned char timerIsRinging = FALSE;
 /************************************************************************/
 char getBit(char id, int position)
 {
-   //return (id & (1 << position)) == position; // NULL or NON ZERO
-   //return (id >> position) & 1;
    return (id & position) == position;
 }
 
@@ -115,7 +113,9 @@ void wait(float sec, unsigned char block){
 	}
 }
 void changeButton(char id, int position, int changeVal){
+	// Pin einlesen
 	bit = getBit(id, position);
+	// state erhöhen, wenn entsprechende Taste gedrückt wurde
 	if (bit == 1){
 		state += changeVal;
 	} 
@@ -140,44 +140,60 @@ int main(void)
 	PORTA = 0x00;		// all LEDs off
 	DDRC  = 0xF0;		// PC4 - PC7 = Output,     PC0 - PC3 = Input
 	PORTC = 0x00;		// PC0 - PC7 = TRISTATE
+	
+	// Timer auf 1s setzen.
+	// nötig für nachleuchten der LED's nachdem Tasten losgelassen wurde
 	wait(1, FALSE);
+	
 	while(1)
 	{
-		
 		state = 0x00;
-		DDRC = N4;
-		PORTC = N4; // PC4 = Input
-		_delay_ms(1);
-			changeButton(PINC, N0, 0x01);
-			changeButton(PINC, N1, 0x02);
-			changeButton(PINC, N2, 0x03);
-			changeButton(PINC, N3, 0x0A);
 		
+		// PC4 = Input
+		DDRC = N4;
+		PORTC = N4;
+		_delay_ms(1);
+		
+		// einzelne Pins einlesen und ggf. state erhöhen
+		changeButton(PINC, N0, 0x01);
+		changeButton(PINC, N1, 0x02);
+		changeButton(PINC, N2, 0x03);
+		changeButton(PINC, N3, 0x0A);
+		
+		// PC5 = Input
 		DDRC = N5;
-		PORTC = N5; // PC5 = Input
+		PORTC = N5;
 		_delay_ms(1);
-			changeButton(PINC, N0, 0x04);
-			changeButton(PINC, N1, 0x05);
-			changeButton(PINC, N2, 0x06);
-			changeButton(PINC, N3, 0x0B);
+		
+		// einzelne Pins einlesen und ggf. state erhöhen
+		changeButton(PINC, N0, 0x04);
+		changeButton(PINC, N1, 0x05);
+		changeButton(PINC, N2, 0x06);
+		changeButton(PINC, N3, 0x0B);
 
+		// PC6 = Input
 		DDRC = N6;
-		PORTC = N6; // PC6 = Input
+		PORTC = N6;
 		_delay_ms(1);
-			changeButton(PINC, N0, 0x07);
-			changeButton(PINC, N1, 0x08);
-			changeButton(PINC, N2, 0x09);
-			changeButton(PINC, N3, 0x0C);
+		
+		// einzelne Pins einlesen und ggf. state erhöhen
+		changeButton(PINC, N0, 0x07);
+		changeButton(PINC, N1, 0x08);
+		changeButton(PINC, N2, 0x09);
+		changeButton(PINC, N3, 0x0C);
 
+		// PC7 = Input
 		DDRC = N7;
-		PORTC = N7; // PC7 = Input
+		PORTC = N7;
 		_delay_ms(1);
-			changeButton(PINC, N0, 0x0E);
-			changeButton(PINC, N1, 0x10);
-			changeButton(PINC, N2, 0x0F);
-			changeButton(PINC, N3, 0x0D);
+		
+		// einzelne Pins einlesen und ggf. state erhöhen
+		changeButton(PINC, N0, 0x0E);
+		changeButton(PINC, N1, 0x10);
+		changeButton(PINC, N2, 0x0F);
+		changeButton(PINC, N3, 0x0D);
 			
-		//PORTC = 0xF0; // PC0 - PC4 = TRISTATE
+		// Gedrückten Wert (state) anzeigen	
 		showVal();
 		_delay_ms(10);
 	}
