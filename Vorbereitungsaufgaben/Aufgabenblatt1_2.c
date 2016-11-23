@@ -43,7 +43,7 @@ typedef enum
 
 } muster_t;
 
-//spezielle Anzeigemuster
+//Spezielle Anzeigemuster
 typedef enum
 {
 	ready, correct, wrong, stage
@@ -54,7 +54,6 @@ muster_t eingMuster = ende;
 muster_t muster[MAXARRAY];
 muster_t checkMuster[MAXARRAY];
 
-// 
 unsigned char enterIsPressed = FALSE;
 unsigned char cancelIsPressed = FALSE;
 volatile unsigned char timerIsRinging = FALSE;
@@ -72,14 +71,15 @@ char toggleBit(char var, char n, char x)
 	return var ^= (-x ^ var) & (1 << n);
 }
 
+
 /************************************************************************/
 /* Gibt das Bit einer bestimmten Stelle im Char zurück                  */
 /************************************************************************/
 char getBit(char id, int position)
 {
-	// return id & (1 << position); // NULL or NON ZERO
    return (id >> position) & 1;
 }
+
 
 /************************************************************************/
 /* Setzt die Variablen nach einer Eingabe							    */
@@ -93,9 +93,9 @@ void doChange(char pin, int number) {
 			else if (number == PINUP) {eingMuster = up;}
 			else if (number == PINDOWN) {eingMuster = down;}
 			else if (number == PINENTER) {enterIsPressed = TRUE;}
-//				else if (number == PINCANCEL) {}
 		}
 }
+
 
 /************************************************************************/
 /* Schaltet eine LED an oder aus										*/
@@ -115,6 +115,7 @@ void setLED(muster_t m, int on){
 		else if (m == down) {PORTB &= ~N7;}
 	}
 }
+
 
 /************************************************************************/
 /* Initialisieren von Timer1.                                           */
@@ -143,6 +144,7 @@ void timer1Init (float sec) {
 	TCNT1 = 0x00;		// Zaehlregister des Timers noch auf Null stellen
 }
 
+
 /************************************************************************/
 /* Compare Interrupt A													*/
 /* schaltet die PortA-LED ein und die Port B - LED aus					*/
@@ -151,6 +153,7 @@ ISR (TIMER1_COMPA_vect) {
 	timerIsRinging = TRUE;
 }
 
+
 /************************************************************************/
 /* Setzt den Timercounter zurück                                        */
 /************************************************************************/
@@ -158,12 +161,15 @@ void resetWait(){
 	TCNT1 = 0x00;		// Zaehlregister des Timers auf Null setzen
 }
 
+
 /************************************************************************/
 /* Stopt den Timer                                                      */
 /************************************************************************/
 void cleanWait(){
 	TCCR1B = 0x08;
 }
+
+
 /************************************************************************/
 /* Wartet eine festgelegte Anzahl von Sekunden,							*/
 /* zweites Argument bestimmt, ob der Aufruf blockierend ist oder nicht	*/
@@ -182,7 +188,7 @@ void wait(float sec, unsigned char block){
 }
 
 /************************************************************************/
-/* gibt ein Muster aus mit einer Sek verzögerung zwischen den Zeichen	*/
+/* Gibt das generierte Muster mit jeweils 1 Sek Verzögerung zwischen den einzelnen Elementen aus	*/
 /************************************************************************/
 void showMuster(muster_t m[]){
 	int zaehler = 0;
@@ -205,8 +211,8 @@ void checkAndDoChange(char pin, int number) {
 	if(getBit(state, number) != pin){
 		state = toggleBit(state, number, pin);
 		doChange(pin, number);
-		// setzte den Timer zurück, da Eingabe
-		resetWait(); // ein wenig unsauber, aber durchs polling nicht schöner lösbar
+		// Zurücksetzen des Timers
+		resetWait();
 	}
 }
 
@@ -306,9 +312,8 @@ void isReadyForGame(void){
 	level = 0;
 	showDefineMuster(stage);
 	showDefineMuster(ready);
-	while(level < 1) // Springt weiter nachdem ENTER losgelassen (!) wird
+	while(level < 1) // Springt weiter, nachdem ENTER losgelassen wird
     {
-		//debug = getBit(PINA,PINENTER);
 		checkAndDoChange(getBit(PINA,PINENTER), PINENTER);
 		if (enterIsPressed){
 			level = 1;
@@ -326,9 +331,7 @@ void isReadyForGame(void){
 int auswertung(){
 	int zaehler = 0;
 	int musterokay = TRUE;
-	if (checkMuster[0] == ende){
-		//showDefineMuster(wrong); // Fehler
-		wait(1, TRUE);
+	if (checkMuster[0] == ende){				
 		return FALSE;
 	} else {
 		while (muster[zaehler] != ende && checkMuster[zaehler] != ende)
@@ -343,9 +346,7 @@ int auswertung(){
 			showDefineMuster(correct); // Korrekt
 			return TRUE;
 		} else {
-			//showDefineMuster(wrong); // Fehler
 			return FALSE;
-			//wait(1, TRUE);
 		}
 	}
 }
@@ -359,7 +360,6 @@ void getEingabe(){
 	timerIsRinging = FALSE;
 	cancelIsPressed = FALSE;
 	wait(5, FALSE);
-//	resetWait();
 	while(!cancelIsPressed && !nextLvl)
 	{
 		// Lasse Muster vom Spieler eingeben
@@ -391,10 +391,9 @@ void getEingabe(){
 			else {
 				cancelIsPressed = TRUE;
 			}
-		} else if (timerIsRinging) { // länger als 5 sek keine Eingabe, Auswertung (falsch)
+		} else if (timerIsRinging) { // länger als 5 sek keine Eingabe, Abbruch
 			cancelIsPressed = TRUE;
-		}
-		// TODO Nach Auswertung ->  Ausgabe von level (anzahl der Muster) + nextLvl = TRUE;
+		}		
 	}
 	if (cancelIsPressed == TRUE) {
 		wait(0.5, TRUE);
@@ -402,6 +401,7 @@ void getEingabe(){
 		showDefineMuster(wrong);
 	}
 }
+
 
 /************************************************************************/
 /* Generiert ein zufälliges Muster                                      */
@@ -459,7 +459,7 @@ void isinGame(void){
     }
 }
 
-// Hier beginnt die Magie
+
 int main(void)
 {
 	int i;
