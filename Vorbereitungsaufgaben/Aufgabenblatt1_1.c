@@ -1,8 +1,13 @@
 /*
- * TimerDemo.c
+ * Aufgabenblatt1_1.c
  *
  * Created: 31.10.2013 13:20:09
- *  Author: Ole Blaurock
+ *  Author: Ole Blaurock, Chris Deter, Alexandra Scheben, Dirk Teschner
+ *
+ * Programm ist größtenteils aus der TimerDemo.c übernommen worden
+ * Es wurden die Timer Zeiten angepasst und eine weitere LED in den Interrupts angesteuert,
+ * so dass die beiden LED's gleichmäßig abwechselnd blinken
+ *
  *
  * Demo how to use the Timer1 Interrupts
  * One Compare Interrupt is used to let an LED blink with 1Hz
@@ -55,25 +60,25 @@ void timer1Init (void) {
 
 	// Timer-Modus: Clear Timer on Compare match (CTC) 
 	// d.h Z?hlen bis Wert in OCR1A, dann Reset
-	// Konfigbits daf?r in TCCR1A und TCCR1B verteilt
+	// Konfigbits dafür in TCCR1A und TCCR1B verteilt
 	// Prescaler steht in Bit 2..0 von TCCR1B
 	TCCR1A = 0x00;		//CTC ON
 	TCCR1B = 0x0D;		//Prescaler 1024; Grundfreq = 1 MHz / 1024 = 977Hz
 						// mit Fuse CLKDIV8 gesetzt sind es effektiv 1MHz
 	
 	// Konfigurieren der "Output Compare Units" 
-	// (Vergleich des Z?hlerwertes auf Schwellwert --> Interrupt)
+	// (Vergleich des Zählerwertes auf Schwellwert --> Interrupt)
 	OCR1B = 488;		// 1.000.000 / 1024 / 2 = 477 für 0,5 Sekunden
 	OCR1A = 977;		// 1.000.000 / 1024 = 977 für eine Sekunde 
 	// Nun die relevanten Interrupts aktivieren: Timer Interrupt Mask
 	TIMSK1 = (1<<1);	// Bit 1 ? OCIE1A: Timer/Counter1, Output Compare A Match Interrupt Enable
 	TIMSK1 |= (1<<2);	// Bit 2 ? OCIE1B: Timer/Counter1, Output Compare B Match Interrupt Enable
 	
-	TCNT1 = 0x00;		// Z?hlregister des Timers noch auf Null stellen
+	TCNT1 = 0x00;		// Zählregister des Timers noch auf Null stellen
 }
 
 /************************************************************************/
-/* Interrupt Service Routinen f?r Timer1								*/
+/* Interrupt Service Routinen für Timer1								*/
 /************************************************************************/
 
 /* Compare Interrupt A													*/
