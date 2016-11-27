@@ -14,11 +14,11 @@ void initDisp(void) {
 
 void dispSet(char topRow[], char bottomRow[]) {
     int i;
-    for(i = 0; i < 8; i++) {
+    for(i = 0; i < 17; i++) {
         printf("%c", topRow[i]);
     }
     printf("\n");
-    for(i = 0; i < 8; i++) {
+    for(i = 0; i < 17; i++) {
         printf("%c", bottomRow[i]);
     }
     printf("\n");
