@@ -20,25 +20,25 @@ typedef enum
     time, timetemp, temphum, timetemphum, confH, confM, confS, confDisplay
 } display_t;
 
-typedef struct time
+typedef struct stime
 {	
     uint8_t hour;
     uint8_t minute;
-    uint8_t seconds;
-} time_t;
+    uint8_t second;
+} smhTime_t;
 
 typedef struct measuringSet
 {	
     int8_t temp; // -55 to +125 °C
     uint8_t hum; 
-    time_t time;
+    smhTime_t time;
 } measuringSet_t;
 
 typedef struct state
 {	
     display_t displayMode;
     uint8_t readIntervall; 
-    time_t time;
+    smhTime_t time;
 } state_t;
 
 

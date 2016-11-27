@@ -9,32 +9,103 @@
 
 char* itoa(int i, char b[]);
 
+char* toDRight(char b[], uint8_t fill);
+
+char* setDTemp(char b[], uint8_t tmpVal);
+
+char* setDVal(char b[], uint8_t tmpVal, uint8_t offset, uint8_t size, uint8_t withZero);
+
+char* setDText(char b[], char text[]);
+
+char* setDHum(char b[], uint8_t tmpVal);
+
+char* setDTime(char b[], smhTime_t* t);
+
 void initDisplay(void){
     
 }
 
 void setDisplay(measuringSet_t ms, display_t displayMode){
-    char temp[4] ="   ";
-    char arr[17]  = "123456789ABCDEF";
-    char arr2[17] = "TEMPERATUR:     ";
-    char tempSym = 'C';
-    char empty = ' ';
-    itoa(ms.temp, temp);
-    arr2[12] = temp[0];
-    arr2[13] = temp[1];
-    arr2[14] = temp[2];
-     if (temp[1] == empty){
-       arr2[13] = tempSym;
-    } else if (temp[2] == empty){
-       arr2[14] = tempSym; 
+    char arr[DISPLAY_ARRAY_SIZE]  = "0123456789ABCDEF";
+    char arr2[DISPLAY_ARRAY_SIZE] = "                ";
+    if (displayMode == time){
+        setDTime(arr, &ms.time);
+    } else if (displayMode == timetemp){
+        setDTime(arr, &ms.time);
+        setDTemp(arr2, ms.temp);
+    } else if (displayMode == temphum){
+        setDTemp(arr2, ms.temp);
+        setDHum(arr, ms.hum);
     } else {
-       arr2[15] = tempSym; 
+        setDTemp(arr2, ms.temp); // TODO
+        setDTime(arr, &ms.time);
     }
     dispSet(arr,arr2);
 }
 
 void setConfStepDisp(display_t displayMode, uint8_t val){
     
+}
+
+char* setDTime(char b[], smhTime_t* t){
+    char text[DISPLAY_ARRAY_SIZE] = "TIME:     :  :  ";
+    setDText(b,text);
+    setDVal(b,t->hour,8,2,TRUE);
+    setDVal(b,t->minute,11,2,TRUE);
+    setDVal(b,t->second,14,2,TRUE);
+}
+
+char* setDTemp(char b[], uint8_t tmpVal){
+    char text[DISPLAY_ARRAY_SIZE] = "TEMPERATUR:    C";
+    setDText(b,text);
+    setDVal(b,tmpVal,12,3,FALSE);
+}
+
+char* setDHum(char b[], uint8_t tmpVal){
+    char text[DISPLAY_ARRAY_SIZE] = "FEUCHTE:       %";
+    setDText(b,text);
+    setDVal(b,tmpVal,12,3,FALSE);
+}
+
+char* setDText(char b[], char text[]){
+    int i;
+    for (i = 0; i<DISPLAY_ARRAY_SIZE; i++){
+        b[i] = text[i];
+    }
+}
+
+char* setDVal(char b[], uint8_t tmpVal, uint8_t offset, uint8_t size, uint8_t withZero){
+    char temp[4] ="   ";
+    itoa(tmpVal, temp);
+    toDRight(temp,size);
+    b[offset] = temp[0];
+    if (size > 1){
+        b[offset+1] = temp[1];
+    }
+    if (size > 2){
+        b[offset+2] = temp[2];
+    }
+    if(withZero){
+       if (b[offset] == ' '){
+           b[offset] = '0';
+       }
+       if (b[offset+1] == ' '){
+           b[offset+1] = '0';
+       }
+    }
+    return b;
+}
+
+char* toDRight(char b[], uint8_t fill){
+    char empty = ' ';
+    int i;
+    while(b[fill-1] == empty){
+        for (i = fill - 2; i >= 0 ;i--){
+            b[i+1] = b[i];
+        }
+        b[0] = empty;
+    }
+    return b;
 }
 
 char* itoa(int i, char b[]){
@@ -45,12 +116,12 @@ char* itoa(int i, char b[]){
         i *= -1;
     }
     int shifter = i;
-    do{ //Move to where representation ends
+    do{
         ++p;
         shifter = shifter/10;
     }while(shifter);
     //*p = '\0';
-    do{ //Move back, inserting digits as u go
+    do{
         *--p = digit[i%10];
         i = i/10;
     }while(i);

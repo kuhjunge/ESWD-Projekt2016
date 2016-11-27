@@ -9,6 +9,7 @@
 #include "thermoTypes.h"
 #include "climaControl.h"
 #include "displayManager.h"
+#include "timeControl.h"
 /*
  * 
  */
@@ -16,8 +17,11 @@
 int main(int argc, char** argv) {
     measuringSet_t ms;
     display_t disp = temphum;
+    initTime();
     ms.temp = getTemp();
-    setDisplay(ms, disp);
+    ms.hum = getHum(); 
+    ms.time = getTime();
+   setDisplay(ms, disp);
     return (EXIT_SUCCESS);
 }
 
