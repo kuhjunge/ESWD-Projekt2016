@@ -4,10 +4,11 @@
  *
  * Created on 27. November 2016, 13:52
  */
+
 #ifndef CLIMACONTROL_H
 #define CLIMACONTROL_H
 
-#include "types.h"
+#include "thermoTypes.h"
 
 void initClima(void);
 

@@ -6,10 +6,25 @@
  */
 
 #include "thermoTypes.h"
-
+#if SIMULATOR > 0
+#include <time.h>
+#endif
 smhTime_t sysTime;
 
+#if SIMULATOR > 0
+time_t mastertime;
+#endif
+
 void tick(void){
+    #if SIMULATOR > 0
+    time_t curtime;
+
+    /* Get the current time. */
+    curtime = time (NULL);
+
+    if (curtime != mastertime){
+        mastertime = curtime;
+    #endif
     sysTime.second++;
     if (sysTime.second > 59){
         sysTime.second = 0;
@@ -22,12 +37,18 @@ void tick(void){
           }
         }
     }
+    #if SIMULATOR > 0
+    }
+    #endif
 }
 
 void initTime(void){
     sysTime.hour = 0;
     sysTime.minute = 0;
     sysTime.second = 0;
+    #if SIMULATOR > 0
+    mastertime = time (NULL);
+    #endif
 }
 
 smhTime_t getTime(smhTime_t* t){

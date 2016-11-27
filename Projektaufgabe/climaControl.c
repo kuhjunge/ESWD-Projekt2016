@@ -12,9 +12,9 @@ void initClima(void){
 }
 
 uint8_t getHum(void){
-    return 50;
+    return 50; // TODO
 }
 
 int8_t getTemp(void){
-    return 25;
+    return 25; // TODO
 }

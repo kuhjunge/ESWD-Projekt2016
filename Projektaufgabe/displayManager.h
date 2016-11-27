@@ -8,7 +8,6 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include "thermoTypes.h"
 #include "displayControl.h"
 
 void initDisplay(void);

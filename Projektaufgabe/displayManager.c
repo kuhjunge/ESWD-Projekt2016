@@ -22,22 +22,22 @@ char* setDHum(char b[], uint8_t tmpVal);
 char* setDTime(char b[], smhTime_t* t);
 
 void initDisplay(void){
-    
+    initDisp();
 }
 
 void setDisplay(measuringSet_t ms, display_t displayMode){
     char arr[DISPLAY_ARRAY_SIZE]  = "0123456789ABCDEF";
     char arr2[DISPLAY_ARRAY_SIZE] = "                ";
-    if (displayMode == time){
+    if (displayMode == dispTime){
         setDTime(arr, &ms.time);
-    } else if (displayMode == timetemp){
+    } else if (displayMode == dispTimeTemp){
         setDTime(arr, &ms.time);
         setDTemp(arr2, ms.temp);
-    } else if (displayMode == temphum){
+    } else if (displayMode == dispTempHum){
         setDTemp(arr2, ms.temp);
         setDHum(arr, ms.hum);
     } else {
-        setDTemp(arr2, ms.temp); // TODO
+        setDTemp(arr2, ms.temp); // TODO wechselnde Anzeige
         setDTime(arr, &ms.time);
     }
     dispSet(arr,arr2);

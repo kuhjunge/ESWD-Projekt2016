@@ -17,7 +17,7 @@ typedef enum
 
 typedef enum
 {
-    time, timetemp, temphum, timetemphum, confH, confM, confS, confDisplay
+    dispTime, dispTimeTemp, dispTempHum, dispTimetemphum, confH, confM, confS, confDisplay
 } display_t;
 
 typedef struct stime
