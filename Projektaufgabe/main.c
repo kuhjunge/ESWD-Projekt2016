@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include "thermoTypes.h"
 #include "climaControl.h"
-#include "test.h"
+#include "displayManager.h"
 /*
  * 
  */
