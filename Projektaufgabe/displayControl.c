@@ -10,13 +10,13 @@
 #if SIMULATOR < 1
 #define LCD_PORT      PORTD
 #define LCD_DDR       DDRD
-#define LCD_DB        PD0
+#define LCD_DB        PD4
 
 //  LCD RS      <-->  PORTD Bit PD4     (RS: 1=Data, 0=Command)
-#define LCD_RS        PD4
+#define LCD_RS        PD2
 
 //  LCD EN      <-->  PORTD Bit PD5     (EN: 1-Impuls für Daten)
-#define LCD_EN        PD5
+#define LCD_EN        PD3
 
 #define LCD_COMMAND_US          42
 #define LCD_CLEAR_DISPLAY       0x01
@@ -154,11 +154,11 @@ void initDisp(void) {
 
 void lcd_string(const char *data) {
     int i;
-    for (i = 0; i < DISPLAY_ARRAY_SIZE; i++) {
+    for (i = 0; i < DISPLAY_ARRAY_SIZE -1; i++) {
         printf("%c", data[i]);
     }
     printf("\n");
-    for (i = DISPLAY_ARRAY_SIZE; i < DISPLAY_ARRAY_SIZE * 2; i++) {
+    for (i = DISPLAY_ARRAY_SIZE -1; i < (DISPLAY_ARRAY_SIZE * 2) -1; i++) {
         printf("%c", data[i]);
     }
     printf("\n");
@@ -172,6 +172,7 @@ void dispSet(char topRow[], char bottomRow[]) {
     for (i = 0; i < DISPLAY_ARRAY_SIZE; i++) {
         str[j++] = topRow[i];
     }
+    j--;
     for (i = 0; i < DISPLAY_ARRAY_SIZE; i++) {
         str[j++] = bottomRow[i];
     }

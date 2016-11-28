@@ -56,7 +56,7 @@ char* setDTime(char b[], smhTime_t* t) {
 }
 
 char* setDTemp(char b[], int16_t tmpVal) {
-    char text[DISPLAY_ARRAY_SIZE] = "TEMP:          C";
+    char text[DISPLAY_ARRAY_SIZE] = "TEMP:         *C";
     setDText(b, text);
     setDVal(b, tmpVal, 9, 4, FALSE);
 }
