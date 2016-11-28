@@ -14,7 +14,7 @@ void initClima(void);
 
 uint8_t getHum(void);
 
-int8_t getTemp(void);
+int16_t getTemp(void);
 
 #endif /* CLIMACONTROL_H */
 

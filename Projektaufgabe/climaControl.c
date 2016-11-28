@@ -15,6 +15,6 @@ uint8_t getHum(void) {
     return 50; // TODO
 }
 
-int8_t getTemp(void) {
-    return 255; // TODO
+int16_t getTemp(void) {
+    return 1125; // TODO
 }

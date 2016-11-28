@@ -13,7 +13,7 @@ char* toDRight(char b[], uint8_t fill);
 
 char* setDTemp(char b[], int16_t tmpVal);
 
-char* setDVal(char b[], uint8_t tmpVal, uint8_t offset, uint8_t size, uint8_t withZero);
+char* setDVal(char b[], int16_t tmpVal, uint8_t offset, uint8_t size, uint8_t withZero);
 
 char* setDText(char b[], char text[]);
 
@@ -74,7 +74,7 @@ char* setDText(char b[], char text[]) {
     }
 }
 
-char* setDVal(char b[], uint8_t tmpVal, uint8_t offset, uint8_t size, uint8_t withZero) {
+char* setDVal(char b[], int16_t tmpVal, uint8_t offset, uint8_t size, uint8_t withZero) {
     char temp[5] = "    ";
     itoa(tmpVal, temp);
     toDRight(temp, size);
@@ -84,6 +84,9 @@ char* setDVal(char b[], uint8_t tmpVal, uint8_t offset, uint8_t size, uint8_t wi
     }
     if (size > 2) {
         b[offset + 2] = temp[2];
+        if (temp[2] == ' '){
+          b[offset + 2] = '0';  
+        }
     }
     if (size > 3) {
         b[offset + 3] = ',';
