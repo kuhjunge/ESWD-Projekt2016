@@ -7,14 +7,14 @@
 
 #include "climaControl.h"
 
-void initClima(void){
-    
+void initClima(void) {
+
 }
 
-uint8_t getHum(void){
+uint8_t getHum(void) {
     return 50; // TODO
 }
 
-int8_t getTemp(void){
-    return 25; // TODO
+int8_t getTemp(void) {
+    return 255; // TODO
 }

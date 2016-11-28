@@ -19,12 +19,12 @@ int main(int argc, char** argv) {
     measuringSet_t ms;
     display_t disp = dispTimeTemp;
     initTime();
-    while(1){
+    while (1) {
         tick();
         ms.temp = getTemp();
-        ms.hum = getHum(); 
+        ms.hum = getHum();
         ms.time = getTime();
-       setDisplay(ms, disp);
+        setDisplay(ms, disp);
     }
     return (EXIT_SUCCESS);
 }
