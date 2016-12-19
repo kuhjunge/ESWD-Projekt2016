@@ -8,11 +8,17 @@
 #include "climaControl.h"
 
 void initClima(void) {
-
+	HUMREADPORT  = 0x00;
+	HUMREADDDR = 0x00;
 }
 
 uint8_t getHum(void) {
-    return 50; // TODO
+	#if SIMULATOR < 1
+	uint8_t value = (ANALOG_INPUT_READ_BITMASK & PINA) * ANALOG_INPUT_SCALE;
+		return (value > ANALOG_MAX_PERCENT) ? ANALOG_MAX_PERCENT : value;
+	#else
+		return 50; // Simulator Default Value
+	#endif
 }
 
 int16_t getTemp(void) {

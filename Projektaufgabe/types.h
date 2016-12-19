@@ -12,7 +12,7 @@
 #define FALSE 0
 #define TRUE !FALSE
 
-#define SIMULATOR 1
+#define SIMULATOR 0
 
 typedef unsigned char		uint8_t;
 //typedef unsigned short int	uint16_t;
