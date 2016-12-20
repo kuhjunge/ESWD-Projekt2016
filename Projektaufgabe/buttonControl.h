@@ -16,10 +16,12 @@
 #define PINENTER 4
 #define PINCANCEL 5
 
+#if SIMULATOR < 1
 #define BUTTON_PORT PORTA
 #define BUTTON_DDR DDRA
 #define BUTTON_PIN PINA
 #define BUTTON_INIT 0b11001100;
+#endif
 
 void initButton(void);
 

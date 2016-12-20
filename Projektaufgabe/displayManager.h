@@ -9,6 +9,7 @@
 #define DISPLAY_H
 
 #include "displayControl.h"
+#include "timeControl.h"
 
 void initDisplay(void);
 
