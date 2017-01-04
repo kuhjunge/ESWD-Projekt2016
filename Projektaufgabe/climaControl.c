@@ -52,5 +52,5 @@ uint8_t getHum(void) {
 }
 
 int16_t getTemp(void) {
-    return 255; // Simulator Default Value
+    return 25; // Simulator Default Value
 }

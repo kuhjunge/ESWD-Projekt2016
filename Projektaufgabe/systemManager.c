@@ -25,12 +25,16 @@ measuringSet_t update(void) {
     return ms;
 }
 
+void setSystemTime(){
+	systemState.time = getTime(); 
+}
+
 void thermoMode(void) {
     uint8_t goToConfigMode = FALSE;
     button_t b;
     while (!goToConfigMode) {
-        tick();
         update();
+		setSystemTime();
         setDisplay(ms, systemState.displayMode);
         if (isPressed() == TRUE) {
             b = getButton();
@@ -38,6 +42,9 @@ void thermoMode(void) {
                 goToConfigMode = TRUE;
             }
         }
+		while (systemState.time.second == ms.time.second){
+			setSystemTime();
+		}
     }
 }
 
@@ -57,10 +64,9 @@ void configMode(void) {
 
 void startThermo(void) {
     init();
-    systemState.displayMode = dispTimeTemp;
+    systemState.displayMode = dispTempHum;
     systemState.readIntervall = 1;
     while (1) {
-        tick();
         systemState.time = getTime();
         // Check for Buttons
         thermoMode();
