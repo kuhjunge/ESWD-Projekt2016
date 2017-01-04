@@ -16,7 +16,5 @@ smhTime_t getTime(void);
 
 void setTime(uint8_t h, uint8_t m, uint8_t s);
 
-void tick(void);
-
 #endif /* TIMECONTROL_H */
 

@@ -15,16 +15,50 @@ smhTime_t sysTime;
 time_t mastertime;
 #endif
 
-void tick(void) {
-#if SIMULATOR > 0
-    time_t curtime;
+#if SIMULATOR < 1
 
+void timer1Init () {
+	cli();	
+	TCCR1A = 0x00;		//CTC ON
+	TCCR1B = 0x0D;		//Prescaler 1024; Grundfreq = 1 MHz / 1024 = 977Hz
+	// mit Fuse CLKDIV8 gesetzt sind es effektiv 1MHz
+	
+	// Konfigurieren der "Output Compare Units"
+	OCR1A = 977 * 8;		// 1.000.000 / 1024 = 977 fuer eine Sekunde
+	// Nun die relevanten Interrupts aktivieren: Timer Interrupt Mask
+	TIMSK1 = (1<<1);	// Bit 1 ? OCIE1A: Timer/Counter1, Output Compare A Match Interrupt Enable
+	TCNT1 = 0x00;		// Zaehlregister des Timers noch auf Null stellen
+	sei();
+}
+
+/************************************************************************/
+/* Compare Interrupt A													*/
+/* schaltet die PortA-LED ein und die Port B - LED aus					*/
+/************************************************************************/
+ISR (TIMER1_COMPA_vect) {
+	TCNT1 = 0x00; // Timer auf Null
+	sysTime.second++;
+	if (sysTime.second > 59) {
+		sysTime.second = 0;
+		sysTime.minute++;
+		if (sysTime.minute > 59) {
+			sysTime.minute = 0;
+			sysTime.hour++;
+			if (sysTime.hour > 23) {
+				sysTime.hour = 0;
+			}
+		}
+	}
+}
+#endif
+
+#if SIMULATOR > 0
+void tick(void) {
+    time_t curtime;
     /* Get the current time. */
     curtime = time(NULL);
-
     if (curtime != mastertime) {
         mastertime = curtime;
-#endif
         sysTime.second++;
         if (sysTime.second > 59) {
             sysTime.second = 0;
@@ -37,18 +71,15 @@ void tick(void) {
                 }
             }
         }
-#if SIMULATOR > 0
     }
-#endif
 }
+#endif
 
 void initTime(void) {
     sysTime.hour = 0;
     sysTime.minute = 0;
     sysTime.second = 0;
-#if SIMULATOR > 0
-    mastertime = time(NULL);
-#endif
+	timer1Init();
 }
 
 smhTime_t getTime(smhTime_t* t) {
