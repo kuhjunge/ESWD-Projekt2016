@@ -1,9 +1,9 @@
-/* 
- * File:   main.c
- * Author: Kuhjunge
- *
- * Created on 23. November 2016, 18:07
- */
+/*
+* File:   timeControl.c
+* Author: Alexandra Scheben, Dirk Teschner, Chris Deter
+*
+* Created on 23. November 2016, 18:07
+*/
 
 #include "thermoTypes.h"
 #if SIMULATOR > 0
@@ -18,7 +18,7 @@ time_t mastertime;
 #if SIMULATOR < 1
 
 void timer1Init () {
-	cli();	
+	cli();
 	TCCR1A = 0x00;		//CTC ON
 	TCCR1B = 0x0D;		//Prescaler 1024; Grundfreq = 1 MHz / 1024 = 977Hz
 	// mit Fuse CLKDIV8 gesetzt sind es effektiv 1MHz
@@ -54,40 +54,40 @@ ISR (TIMER1_COMPA_vect) {
 
 #if SIMULATOR > 0
 void tick(void) {
-    time_t curtime;
-    /* Get the current time. */
-    curtime = time(NULL);
-    if (curtime != mastertime) {
-        mastertime = curtime;
-        sysTime.second++;
-        if (sysTime.second > 59) {
-            sysTime.second = 0;
-            sysTime.minute++;
-            if (sysTime.minute > 59) {
-                sysTime.minute = 0;
-                sysTime.hour++;
-                if (sysTime.hour > 23) {
-                    sysTime.hour = 0;
-                }
-            }
-        }
-    }
+	time_t curtime;
+	/* Get the current time. */
+	curtime = time(NULL);
+	if (curtime != mastertime) {
+		mastertime = curtime;
+		sysTime.second++;
+		if (sysTime.second > 59) {
+			sysTime.second = 0;
+			sysTime.minute++;
+			if (sysTime.minute > 59) {
+				sysTime.minute = 0;
+				sysTime.hour++;
+				if (sysTime.hour > 23) {
+					sysTime.hour = 0;
+				}
+			}
+		}
+	}
 }
 #endif
 
 void initTime(void) {
-    sysTime.hour = 0;
-    sysTime.minute = 0;
-    sysTime.second = 0;
+	sysTime.hour = 0;
+	sysTime.minute = 0;
+	sysTime.second = 0;
 	timer1Init();
 }
 
 smhTime_t getTime(smhTime_t* t) {
-    return sysTime;
+	return sysTime;
 }
 
 void setTime(uint8_t h, uint8_t m, uint8_t s) {
-    sysTime.hour = h;
-    sysTime.minute = m;
-    sysTime.second = s;
+	sysTime.hour = h;
+	sysTime.minute = m;
+	sysTime.second = s;
 }

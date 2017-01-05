@@ -1,9 +1,9 @@
-/* 
- * File:   displayControl.h
- * Author: Kuhjunge
- *
- * Created on 27. November 2016, 14:01
- */
+/*
+* File:   displayControl.h
+* Author: Alexandra Scheben, Dirk Teschner, Chris Deter
+*
+* Created on 27. November 2016, 14:01
+*/
 
 #ifndef DISPLAYCONTROL_H
 #define DISPLAYCONTROL_H

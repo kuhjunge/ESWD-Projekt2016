@@ -1,9 +1,9 @@
-/* 
- * File:   timeControl.h
- * Author: Kuhjunge
- *
- * Created on 27. November 2016, 15:16
- */
+/*
+* File:   timeControl.h
+* Author: Alexandra Scheben, Dirk Teschner, Chris Deter
+*
+* Created on 27. November 2016, 15:16
+*/
 
 #ifndef TIMECONTROL_H
 #define TIMECONTROL_H

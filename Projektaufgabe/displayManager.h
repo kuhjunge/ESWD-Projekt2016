@@ -1,15 +1,16 @@
-/* 
- * File:   display.h
- * Author: Kuhjunge
- *
- * Created on 27. November 2016, 13:57
- */
+/*
+* File:   display.h
+* Author: Alexandra Scheben, Dirk Teschner, Chris Deter
+*
+* Created on 27. November 2016, 13:57
+*/
 
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
 #include "displayControl.h"
 #include "timeControl.h"
+#include "debugFunctions.h"
 
 void initDisplay(void);
 

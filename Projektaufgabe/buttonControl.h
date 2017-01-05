@@ -1,9 +1,9 @@
-/* 
- * File:   buttonControl.h
- * Author: Kuhjunge
- *
- * Created on 27. November 2016, 15:19
- */
+/*
+* File:   buttonControl.h
+* Author: Alexandra Scheben, Dirk Teschner, Chris Deter
+*
+* Created on 27. November 2016, 15:19
+*/
 
 #ifndef BUTTONCONTROL_H
 #define BUTTONCONTROL_H

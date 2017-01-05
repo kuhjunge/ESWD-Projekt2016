@@ -1,9 +1,9 @@
-/* 
- * File:   displayControl.c
- * Author: Kuhjunge
- *
- * Created on 27. November 2016, 14:03
- */
+/*
+* File:   displayControl.c
+* Author: Alexandra Scheben, Dirk Teschner
+*
+* Created on 27. November 2016, 14:03
+*/
 
 #include "displayControl.h"
 
@@ -57,93 +57,93 @@
 #define LCD_DDADR_LINE2         0x40
 
 static void lcd_enable(void) {
-    LCD_PORT |= (1 << LCD_EN); // Enable auf 1 setzen
-    _delay_us(20); // kurze Pause in microsec
-    LCD_PORT &= ~(1 << LCD_EN); // Enable auf 0 setzen
+	LCD_PORT |= (1 << LCD_EN); // Enable auf 1 setzen
+	_delay_us(20); // kurze Pause in microsec
+	LCD_PORT &= ~(1 << LCD_EN); // Enable auf 0 setzen
 }
 
 static void lcd_out(uint8_t data) {
-    data &= 0xF0; // obere 4 Bit maskieren
+	data &= 0xF0; // obere 4 Bit maskieren
 
-    LCD_PORT &= ~(0xF0 >> (4 - LCD_DB)); // Maske löschen
-    LCD_PORT |= (data >> (4 - LCD_DB)); // Bits setzen
-    lcd_enable();
+	LCD_PORT &= ~(0xF0 >> (4 - LCD_DB)); // Maske löschen
+	LCD_PORT |= (data >> (4 - LCD_DB)); // Bits setzen
+	lcd_enable();
 }
 
 void lcd_command(uint8_t data) {
-    LCD_PORT &= ~(1 << LCD_RS); // RS auf 0 setzen
+	LCD_PORT &= ~(1 << LCD_RS); // RS auf 0 setzen
 
-    lcd_out(data); // zuerst die oberen,
-    lcd_out(data << 4); // dann die unteren 4 Bit senden
+	lcd_out(data); // zuerst die oberen,
+	lcd_out(data << 4); // dann die unteren 4 Bit senden
 
-    _delay_us(LCD_COMMAND_US);
+	_delay_us(LCD_COMMAND_US);
 }
 
 void lcd_clear(void) {
-    lcd_command(LCD_CLEAR_DISPLAY);
-    _delay_ms(LCD_CLEAR_DISPLAY_MS);
+	lcd_command(LCD_CLEAR_DISPLAY);
+	_delay_ms(LCD_CLEAR_DISPLAY_MS);
 }
 
 void initDisp(void) {
-    // verwendete Pins auf Ausgang schalten
-    uint8_t pins = (0x0F << LCD_DB) | // 4 Datenleitungen
-            (1 << LCD_RS) | // R/S Leitung
-            (1 << LCD_EN); // Enable Leitung
-    LCD_DDR |= pins;
+	// verwendete Pins auf Ausgang schalten
+	uint8_t pins = (0x0F << LCD_DB) | // 4 Datenleitungen
+	(1 << LCD_RS) | // R/S Leitung
+	(1 << LCD_EN); // Enable Leitung
+	LCD_DDR |= pins;
 
-    // initial alle Ausgänge auf Null
-    LCD_PORT &= ~pins;
+	// initial alle Ausgänge auf Null
+	LCD_PORT &= ~pins;
 
-    // warten auf die Bereitschaft des LCD
-    _delay_ms(15); // Bootzeit in ms
+	// warten auf die Bereitschaft des LCD
+	_delay_ms(15); // Bootzeit in ms
 
-    // Soft-Reset muss 3mal hintereinander gesendet werden zur Initialisierung
-    lcd_out(0x30); //LCD Soft Reset Pin
-    _delay_ms(5);
+	// Soft-Reset muss 3mal hintereinander gesendet werden zur Initialisierung
+	lcd_out(0x30); //LCD Soft Reset Pin
+	_delay_ms(5);
 
-    lcd_enable();
-    _delay_ms(1);
+	lcd_enable();
+	_delay_ms(1);
 
-    lcd_enable();
-    _delay_ms(1);
+	lcd_enable();
+	_delay_ms(1);
 
-    // 4-bit Modus aktivieren
-    lcd_out(0x20 | //SET Function
-            0x00); //Set Function 4Bit
-    _delay_ms(5); //4 Bit Mode Milliseconds wait
+	// 4-bit Modus aktivieren
+	lcd_out(0x20 | //SET Function
+	0x00); //Set Function 4Bit
+	_delay_ms(5); //4 Bit Mode Milliseconds wait
 
-    // 4-bit Modus / 2 Zeilen / 5x7
-    lcd_command(LCD_SET_FUNCTION |
-            LCD_FUNCTION_4BIT |
-            LCD_FUNCTION_2LINE |
-            LCD_FUNCTION_5X7);
+	// 4-bit Modus / 2 Zeilen / 5x7
+	lcd_command(LCD_SET_FUNCTION |
+	LCD_FUNCTION_4BIT |
+	LCD_FUNCTION_2LINE |
+	LCD_FUNCTION_5X7);
 
-    // Display ein / Cursor aus / Blinken aus
-    lcd_command(LCD_SET_DISPLAY |
-            LCD_DISPLAY_ON |
-            LCD_CURSOR_OFF |
-            LCD_BLINKING_OFF);
+	// Display ein / Cursor aus / Blinken aus
+	lcd_command(LCD_SET_DISPLAY |
+	LCD_DISPLAY_ON |
+	LCD_CURSOR_OFF |
+	LCD_BLINKING_OFF);
 
-    // Cursor inkrement / kein Scrollen
-    lcd_command(LCD_SET_ENTRY |
-            LCD_ENTRY_INCREASE |
-            LCD_ENTRY_NOSHIFT);
+	// Cursor inkrement / kein Scrollen
+	lcd_command(LCD_SET_ENTRY |
+	LCD_ENTRY_INCREASE |
+	LCD_ENTRY_NOSHIFT);
 
-    lcd_clear();
+	lcd_clear();
 }
 
 void lcd_data(uint8_t data) {
-    LCD_PORT |= (1 << LCD_RS); // RS auf 1 setzen
+	LCD_PORT |= (1 << LCD_RS); // RS auf 1 setzen
 
-    lcd_out(data); // zuerst die oberen,
-    lcd_out(data << 4); // dann die unteren 4 Bit senden
+	lcd_out(data); // zuerst die oberen,
+	lcd_out(data << 4); // dann die unteren 4 Bit senden
 
-    _delay_us(LCD_WRITEDATA_US);
+	_delay_us(LCD_WRITEDATA_US);
 }
 
 void lcd_string(const char *data) {
-    while (*data != '\0')
-        lcd_data(*data++);
+	while (*data != '\0')
+	lcd_data(*data++);
 }
 
 #else
@@ -153,29 +153,29 @@ void initDisp(void) {
 };
 
 void lcd_string(const char *data) {
-    int i;
-    for (i = 0; i < DISPLAY_ARRAY_SIZE -1; i++) {
-        printf("%c", data[i]);
-    }
-    printf("\n");
-    for (i = DISPLAY_ARRAY_SIZE -1; i < (DISPLAY_ARRAY_SIZE * 2) -1; i++) {
-        printf("%c", data[i]);
-    }
-    printf("\n");
+	int i;
+	for (i = 0; i < DISPLAY_ARRAY_SIZE -1; i++) {
+		printf("%c", data[i]);
+	}
+	printf("\n");
+	for (i = DISPLAY_ARRAY_SIZE -1; i < (DISPLAY_ARRAY_SIZE * 2) -1; i++) {
+		printf("%c", data[i]);
+	}
+	printf("\n");
 }
 #endif
 
 void dispSet(char topRow[], char bottomRow[]) {
-    char str[(DISPLAY_ARRAY_SIZE * 2)];
-    int j = 0;
-    int i;
-    for (i = 0; i < DISPLAY_ARRAY_SIZE; i++) {
-        str[j++] = topRow[i];
-    }
-    j--;
-    for (i = 0; i < DISPLAY_ARRAY_SIZE; i++) {
-        str[j++] = bottomRow[i];
-    }
-    lcd_string(str);
+	char str[(DISPLAY_ARRAY_SIZE * 2)];
+	int j = 0;
+	int i;
+	for (i = 0; i < DISPLAY_ARRAY_SIZE; i++) {
+		str[j++] = topRow[i];
+	}
+	j--;
+	for (i = 0; i < DISPLAY_ARRAY_SIZE; i++) {
+		str[j++] = bottomRow[i];
+	}
+	lcd_string(str);
 }
 

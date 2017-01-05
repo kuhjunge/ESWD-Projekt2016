@@ -1,9 +1,9 @@
-/* 
- * File:   systemManager.h
- * Author: Kuhjunge
- *
- * Created on 6. Dezember 2016, 13:08
- */
+/*
+* File:   systemManager.h
+* Author: Alexandra Scheben, Dirk Teschner, Chris Deter
+*
+* Created on 6. Dezember 2016, 13:08
+*/
 
 #ifndef SYSTEMMANAGER_H
 #define SYSTEMMANAGER_H

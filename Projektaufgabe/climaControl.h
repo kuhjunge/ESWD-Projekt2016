@@ -1,9 +1,9 @@
-/* 
- * File:   climaControl.h
- * Author: Kuhjunge
- *
- * Created on 27. November 2016, 13:52
- */
+/*
+* File:   climaControl.h
+* Author: Alexandra Scheben, Dirk Teschner, Chris Deter
+*
+* Created on 27. November 2016, 13:52
+*/
 
 #ifndef CLIMACONTROL_H
 #define CLIMACONTROL_H
@@ -18,8 +18,14 @@
 #define ANALOG_MAX_PERCENT 100
 #endif
 
+/************************************************************************/
+/* Funktion zur initialisierung der Klima Komponenten                   */
+/************************************************************************/
 void initClima(void);
 
+/************************************************************************/
+/* Gibt die Luftfeuchtigkeit in % zurück. Wertebereich: 0 - 100         */
+/************************************************************************/
 uint8_t getHum(void);
 
 int16_t getTemp(void);

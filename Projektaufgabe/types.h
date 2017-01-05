@@ -1,9 +1,9 @@
-/* 
- * File:   types.h
- * Author: Chris Deter
- *
- * Created on 23. November 2016, 18:11
- */
+/*
+* File:   types.h
+* Author: Alexandra Scheben, Dirk Teschner, Chris Deter
+*
+* Created on 23. November 2016, 18:11
+*/
 
 #ifndef TYPES_H
 #define TYPES_H
