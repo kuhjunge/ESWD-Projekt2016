@@ -23,17 +23,23 @@ void setDHum(char b[], uint8_t tmpVal);
 
 void setDTime(char b[], smhTime_t* t);
 
+void setConfigTimeH(char b[], uint8_t tmpVal);
+
+void setConfigTimeM(char b[], uint8_t tmpVal);
+
 void setConfigTimeS(char b[], uint8_t tmpVal);
 
 void setConfigDisp(char b[], uint8_t tmpVal);
+
+char* getDispModeText(uint8_t tmpVal);
 
 void initDisplay(void) {
 	initDisp();
 }
 
 void setDisplay(measuringSet_t ms, display_t displayMode) {
-	char arr[DISPLAY_ARRAY_SIZE] =  "                ";
-	char arr2[DISPLAY_ARRAY_SIZE] = "                ";
+	char arr[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] =  "                ";
+	char arr2[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "                ";
 	setDisplayDebugLED(displayMode);
 	if (displayMode == dispTime) {
 		setDTime(arr, &ms.time);
@@ -47,7 +53,7 @@ void setDisplay(measuringSet_t ms, display_t displayMode) {
 		setDHum(arr2, ms.hum);
 	}
 	else {
-		if (toggleDisp < 6){
+		if (toggleDisp <= DISPLAY_TOGGLE_TIME_FIRST){
 			setDTime(arr, &ms.time);
 			toggleDisp++;
 			setDisplayDebugLED(dispTime);
@@ -56,7 +62,7 @@ void setDisplay(measuringSet_t ms, display_t displayMode) {
 			setDTemp(arr, ms.temp);
 			setDHum(arr2, ms.hum);
 			toggleDisp++;
-			if (toggleDisp > 10) {
+			if (toggleDisp > DISPLAY_TOGGLE_TIME_SECOND) {
 				toggleDisp = 0;
 			}
 			setDisplayDebugLED(dispTempHum);
@@ -66,18 +72,18 @@ void setDisplay(measuringSet_t ms, display_t displayMode) {
 }
 
 void setConfStepDisp(display_t displayMode, uint8_t val) {
-	char arr[DISPLAY_ARRAY_SIZE] = "CONFIGURATION:  ";
-	char arr2[DISPLAY_ARRAY_SIZE] = "               ";
+	char arr[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] =  "CONFIGURATION:  ";
+	char arr2[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "                ";
 	setDisplayDebugLED(displayMode);
 	// confH, confM, confS, confDisplay
 	if (displayMode == confDisplay) {
 		setConfigDisp(arr2, val);
 	}
 	else if (displayMode == confH) {
-		setConfigTimeS(arr2, val);
+		setConfigTimeH(arr2, val);
 	}
 	else if (displayMode == confM) {
-		setConfigTimeS(arr2, val);
+		setConfigTimeM(arr2, val);
 	}
 	else { // confS
 		setConfigTimeS(arr2, val);
@@ -86,7 +92,7 @@ void setConfStepDisp(display_t displayMode, uint8_t val) {
 }
 
 void setDTime(char b[], smhTime_t* t) {
-	char text[DISPLAY_ARRAY_SIZE] = "TIME:     :  :  ";
+	char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "TIME:     :  :  ";
 	setDText(b, text);
 	setDVal(b, t->hour, 8, 2, TRUE);
 	setDVal(b, t->minute, 11, 2, TRUE);
@@ -94,32 +100,62 @@ void setDTime(char b[], smhTime_t* t) {
 }
 
 void setDTemp(char b[], int16_t tmpVal) {
-	char text[DISPLAY_ARRAY_SIZE] = "TEMP:         *C";
+	char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "TEMP:         °C";
+	//text[14] = 0xDF; // Versuche das Grad Zeichen korrekt einzusetzen für Display
 	setDText(b, text);
 	setDVal(b, tmpVal, 9, 4, FALSE);
+	
 }
 
 void setDHum(char b[], uint8_t tmpVal) {
-	char text[DISPLAY_ARRAY_SIZE] = "FEUCHTE:       %";
+	char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "HUMIDITY:      %";
 	setDText(b, text);
 	setDVal(b, tmpVal, 12, 3, FALSE);
 }
 
 void setConfigDisp(char b[], uint8_t tmpVal) {
-	char text[DISPLAY_ARRAY_SIZE] = "MODE:           ";
+
+	setDText(b, getDispModeText(tmpVal));
+}
+
+char* getDispModeText(uint8_t tmpVal){
+	switch(tmpVal){
+		case dispTime:
+		return "MODE: TIME ONLY ";
+		break;
+		case dispTimeTemp:
+		return "MODE: TIME+TEMP ";
+		break;
+		case dispTempHum:
+		return "MODE: TEMP+HUM  ";
+		break;
+		default:
+		return "MODE: EVERYTHING";
+		break;
+	}
+}
+
+void setConfigTimeH(char b[], uint8_t tmpVal) {
+	char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "TIME:        h  ";
+	setDText(b, text);
+	setDVal(b, tmpVal, 10, 2, TRUE);
+}
+
+void setConfigTimeM(char b[], uint8_t tmpVal) {
+	char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "TIME:        Min";
 	setDText(b, text);
 	setDVal(b, tmpVal, 10, 2, TRUE);
 }
 
 void setConfigTimeS(char b[], uint8_t tmpVal) {
-	char text[DISPLAY_ARRAY_SIZE] = "TIME:        Sec";
+	char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "TIME:        Sec";
 	setDText(b, text);
 	setDVal(b, tmpVal, 10, 2, TRUE);
 }
 
 void setDText(char b[], char text[]) {
 	int i;
-	for (i = 0; i < DISPLAY_ARRAY_SIZE; i++) {
+	for (i = 0; i < DISPLAY_ARRAY_SIZE_FOR_SOFTWARE; i++) {
 		b[i] = text[i];
 	}
 }

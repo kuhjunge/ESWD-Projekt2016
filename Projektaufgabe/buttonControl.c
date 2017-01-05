@@ -55,7 +55,6 @@ void checkAndDoChange(char pin, int number) {
 	}
 }
 
-#if SIMULATOR < 1
 void initButton(void) {
 	BUTTON_PORT &= BUTTON_INIT;
 	BUTTON_DDR &= BUTTON_INIT;
@@ -73,20 +72,6 @@ uint8_t isPressed(void) {
 		return TRUE;
 	}
 }
-
-
-#else
-
-void initButton(void){
-	
-}
-
-uint8_t isPressed(void){
-	lastPressed = cancel;//enter;
-	return TRUE;
-}
-
-#endif
 
 button_t getButton(void) {
 	button_t temp = lastPressed;

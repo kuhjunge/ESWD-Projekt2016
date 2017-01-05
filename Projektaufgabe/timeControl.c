@@ -6,16 +6,8 @@
 */
 
 #include "thermoTypes.h"
-#if SIMULATOR > 0
-#include <time.h>
-#endif
+
 smhTime_t sysTime;
-
-#if SIMULATOR > 0
-time_t mastertime;
-#endif
-
-#if SIMULATOR < 1
 
 void timer1Init () {
 	cli();
@@ -50,30 +42,6 @@ ISR (TIMER1_COMPA_vect) {
 		}
 	}
 }
-#endif
-
-#if SIMULATOR > 0
-void tick(void) {
-	time_t curtime;
-	/* Get the current time. */
-	curtime = time(NULL);
-	if (curtime != mastertime) {
-		mastertime = curtime;
-		sysTime.second++;
-		if (sysTime.second > 59) {
-			sysTime.second = 0;
-			sysTime.minute++;
-			if (sysTime.minute > 59) {
-				sysTime.minute = 0;
-				sysTime.hour++;
-				if (sysTime.hour > 23) {
-					sysTime.hour = 0;
-				}
-			}
-		}
-	}
-}
-#endif
 
 void initTime(void) {
 	sysTime.hour = 0;

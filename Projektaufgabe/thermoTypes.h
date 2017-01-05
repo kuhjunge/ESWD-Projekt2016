@@ -9,7 +9,6 @@
 #define THERMOTYPES_H
 
 #include "types.h"
-#if SIMULATOR < 1
 
 // F_CPU Notwendig damit delay mit 8Mhz arbeitet
 #define F_CPU 8000000UL 
@@ -17,10 +16,9 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
-#endif
 
 typedef enum {
-	none, enter, cancel, up, down, b0, b1, b2, b3, b4, b5, b6, b7, b8, b9
+	none, enter, cancel, up, down //, b0, b1, b2, b3, b4, b5, b6, b7, b8, b9
 } button_t;
 
 typedef enum {

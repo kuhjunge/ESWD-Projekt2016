@@ -10,7 +10,8 @@
 
 #include "thermoTypes.h"
 
-#define DISPLAY_ARRAY_SIZE 17
+#define DISPLAY_ARRAY_SIZE_FOR_CONTROLLER 41
+#define DISPLAY_ARRAY_SIZE_FOR_SOFTWARE 17
 
 void initDisp(void);
 

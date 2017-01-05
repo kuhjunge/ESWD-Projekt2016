@@ -7,7 +7,6 @@
 
 #include "displayControl.h"
 
-#if SIMULATOR < 1
 #define LCD_PORT      PORTD
 #define LCD_DDR       DDRD
 #define LCD_DB        PD4
@@ -142,40 +141,23 @@ void lcd_data(uint8_t data) {
 }
 
 void lcd_string(const char *data) {
-	while (*data != '\0')
-	lcd_data(*data++);
-}
-
-#else
-#include <stdio.h>
-
-void initDisp(void) {
-};
-
-void lcd_string(const char *data) {
-	int i;
-	for (i = 0; i < DISPLAY_ARRAY_SIZE -1; i++) {
-		printf("%c", data[i]);
+	while (*data != '\0'){
+		lcd_data(*data++);
 	}
-	printf("\n");
-	for (i = DISPLAY_ARRAY_SIZE -1; i < (DISPLAY_ARRAY_SIZE * 2) -1; i++) {
-		printf("%c", data[i]);
-	}
-	printf("\n");
 }
-#endif
 
 void dispSet(char topRow[], char bottomRow[]) {
-	char str[(DISPLAY_ARRAY_SIZE * 2)];
-	int j = 0;
-	int i;
-	for (i = 0; i < DISPLAY_ARRAY_SIZE; i++) {
-		str[j++] = topRow[i];
+	int i = 0;
+	char first[DISPLAY_ARRAY_SIZE_FOR_CONTROLLER]  = "                                        ";
+	char second[DISPLAY_ARRAY_SIZE_FOR_CONTROLLER] = "                                        ";
+	for (i=0;i<DISPLAY_ARRAY_SIZE_FOR_SOFTWARE-1;i++){
+		first[i] = topRow[i];
 	}
-	j--;
-	for (i = 0; i < DISPLAY_ARRAY_SIZE; i++) {
-		str[j++] = bottomRow[i];
+	for (i=0;i<DISPLAY_ARRAY_SIZE_FOR_SOFTWARE-1;i++){
+		second[i] = bottomRow[i];
 	}
-	lcd_string(str);
+	//lcd_clear();
+	lcd_string(first);
+	lcd_string(second);
 }
 

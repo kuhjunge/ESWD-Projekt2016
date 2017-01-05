@@ -12,6 +12,9 @@
 #include "timeControl.h"
 #include "debugFunctions.h"
 
+#define DISPLAY_TOGGLE_TIME_FIRST 5
+#define DISPLAY_TOGGLE_TIME_SECOND 10
+
 void initDisplay(void);
 
 void setDisplay(measuringSet_t ms, display_t displayMode);
