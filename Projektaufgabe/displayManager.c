@@ -7,22 +7,29 @@
 
 #include "displayManager.h"
 
+#define DEBUGLIGHTPORT PORTB
+#define DEBUGLIGHTDDR DDRB
+
+int toggleDisp = 0;
+
 char* itoa(int i, char b[]);
 
 char* toDRight(char b[], uint8_t fill);
 
-char* setDTemp(char b[], int16_t tmpVal);
+void setDTemp(char b[], int16_t tmpVal);
 
 char* setDVal(char b[], int16_t tmpVal, uint8_t offset, uint8_t size, uint8_t withZero);
 
-char* setDText(char b[], char text[]);
+void setDText(char b[], char text[]);
 
-char* setDHum(char b[], uint8_t tmpVal);
+void setDHum(char b[], uint8_t tmpVal);
 
-char* setDTime(char b[], smhTime_t* t);
+void setDTime(char b[], smhTime_t* t);
 
 void initDisplay(void) {
     initDisp();
+	DEBUGLIGHTDDR  = 0xFB;
+	DEBUGLIGHTPORT = 0xF0;
 }
 
 void setDisplay(measuringSet_t ms, display_t displayMode) {
@@ -30,15 +37,29 @@ void setDisplay(measuringSet_t ms, display_t displayMode) {
     char arr2[DISPLAY_ARRAY_SIZE] = "                ";
     if (displayMode == dispTime) {
         setDTime(arr, &ms.time);
+		DEBUGLIGHTPORT = 0x10;
     } else if (displayMode == dispTimeTemp) {
         setDTime(arr, &ms.time);
         setDTemp(arr2, ms.temp);
+		DEBUGLIGHTPORT = 0x20;
     } else if (displayMode == dispTempHum) {
         setDTemp(arr, ms.temp);
         setDHum(arr2, ms.hum);
+		DEBUGLIGHTPORT = 0x30;
     } else {
-        setDTemp(arr2, ms.temp); // TODO wechselnde Anzeige
-        setDTime(arr, &ms.time);
+		if (toggleDisp < 6){
+			setDTime(arr, &ms.time);
+			toggleDisp++;
+			DEBUGLIGHTPORT = 0x40;
+		} else {
+		    setDTemp(arr, ms.temp);
+		    setDHum(arr2, ms.hum);
+			toggleDisp++;
+			if (toggleDisp > 10) {
+				toggleDisp = 0;
+			}
+			DEBUGLIGHTPORT = 0x50;
+		}
     }
     dispSet(arr, arr2);
 }
@@ -47,7 +68,7 @@ void setConfStepDisp(display_t displayMode, uint8_t val) {
 
 }
 
-char* setDTime(char b[], smhTime_t* t) {
+void setDTime(char b[], smhTime_t* t) {
     char text[DISPLAY_ARRAY_SIZE] = "TIME:     :  :  ";
     setDText(b, text);
     setDVal(b, t->hour, 8, 2, TRUE);
@@ -55,19 +76,19 @@ char* setDTime(char b[], smhTime_t* t) {
     setDVal(b, t->second, 14, 2, TRUE);
 }
 
-char* setDTemp(char b[], int16_t tmpVal) {
+void setDTemp(char b[], int16_t tmpVal) {
     char text[DISPLAY_ARRAY_SIZE] = "TEMP:         *C";
     setDText(b, text);
     setDVal(b, tmpVal, 9, 4, FALSE);
 }
 
-char* setDHum(char b[], uint8_t tmpVal) {
+void setDHum(char b[], uint8_t tmpVal) {
     char text[DISPLAY_ARRAY_SIZE] = "FEUCHTE:       %";
     setDText(b, text);
     setDVal(b, tmpVal, 12, 3, FALSE);
 }
 
-char* setDText(char b[], char text[]) {
+void setDText(char b[], char text[]) {
     int i;
     for (i = 0; i < DISPLAY_ARRAY_SIZE; i++) {
         b[i] = text[i];

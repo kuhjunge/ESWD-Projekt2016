@@ -20,7 +20,7 @@ typedef enum {
 } button_t;
 
 typedef enum {
-    dispTime, dispTimeTemp, dispTempHum, dispTimetemphum, confH, confM, confS, confDisplay
+    dispTime, dispTimeTemp, dispTempHum, dispTimeTempHum, confH, confM, confS, confDisplay
 } display_t;
 
 typedef struct stime {
