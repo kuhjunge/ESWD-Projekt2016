@@ -17,7 +17,7 @@
 
 void initDisplay(void);
 
-void setDisplay(measuringSet_t ms, display_t displayMode);
+void setDisplay(measuringSet_t ms, state_t stateOfSystem);
 
 void setConfStepDisp(display_t displayMode, uint8_t val);
 

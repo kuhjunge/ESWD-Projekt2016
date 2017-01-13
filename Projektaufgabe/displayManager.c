@@ -8,6 +8,7 @@
 #include "displayManager.h"
 
 int toggleDisp = 0;
+uint8_t seconds = 0;
 
 char* itoa(int i, char b[]);
 
@@ -29,55 +30,72 @@ void setConfigTimeM(char b[], uint8_t tmpVal);
 
 void setConfigTimeS(char b[], uint8_t tmpVal);
 
+void setConfigChoice(char b[], uint8_t tmpVal);
+
 void setConfigDisp(char b[], uint8_t tmpVal);
 
+void setConfigSpeed(char b[], uint8_t tmpVal);
+
 char* getDispModeText(uint8_t tmpVal);
+
+char* getSelectConfigText(uint8_t tmpVal);
 
 void initDisplay(void) {
 	initDisp();
 }
 
-void setDisplay(measuringSet_t ms, display_t displayMode) {
+void setDisplay(measuringSet_t ms, state_t stateOfSystem) {
 	char arr[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] =  "                ";
 	char arr2[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "                ";
-	setDisplayDebugLED(displayMode);
-	if (displayMode == dispTime) {
-		setDTime(arr, &ms.time);
+	setDisplayDebugLED(stateOfSystem.displayMode);
+	if (stateOfSystem.displayMode == dispTime) {
+		setDTime(arr, &stateOfSystem.time);
 	}
-	else if (displayMode == dispTimeTemp) {
-		setDTime(arr, &ms.time);
+	else if (stateOfSystem.displayMode == dispTimeTemp) {
+		setDTime(arr, &stateOfSystem.time);
 		setDTemp(arr2, ms.temp);
 	}
-	else if (displayMode == dispTempHum) {
+	else if (stateOfSystem.displayMode == dispTempHum) {
 		setDTemp(arr, ms.temp);
 		setDHum(arr2, ms.hum);
 	}
 	else {
-		if (toggleDisp <= DISPLAY_TOGGLE_TIME_FIRST){
-			setDTime(arr, &ms.time);
-			toggleDisp++;
-			setDisplayDebugLED(dispTime);
-		}
-		else {
-			setDTemp(arr, ms.temp);
-			setDHum(arr2, ms.hum);
-			toggleDisp++;
-			if (toggleDisp > DISPLAY_TOGGLE_TIME_SECOND) {
-				toggleDisp = 0;
+			if (toggleDisp <= DISPLAY_TOGGLE_TIME_FIRST){
+				setDTime(arr, &stateOfSystem.time);
+				if (stateOfSystem.time.second != seconds){
+					seconds = stateOfSystem.time.second;
+					toggleDisp++;
+				}
+				setDisplayDebugLED(dispTime);
+			} else {
+				setDTemp(arr, ms.temp);
+				setDHum(arr2, ms.hum);
+				if (stateOfSystem.time.second != seconds){
+					seconds = stateOfSystem.time.second;
+					toggleDisp++;
+					if (toggleDisp > DISPLAY_TOGGLE_TIME_SECOND) {
+						toggleDisp = 0;
+					}
+				}
+				setDisplayDebugLED(dispTempHum);
 			}
-			setDisplayDebugLED(dispTempHum);
-		}
 	}
 	dispSet(arr, arr2);
 }
 
 void setConfStepDisp(display_t displayMode, uint8_t val) {
-	char arr[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] =  "CONFIGURATION:  ";
+	char arr[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] =  "CONFIGURATION   ";
 	char arr2[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "                ";
 	setDisplayDebugLED(displayMode);
 	// confH, confM, confS, confDisplay
-	if (displayMode == confDisplay) {
+	if (displayMode == confOverview) {
+		setConfigChoice(arr2, val);
+	}
+	else if (displayMode == confDisplay) {
 		setConfigDisp(arr2, val);
+	}
+	else if (displayMode == confSpeed) {
+		setConfigSpeed(arr2, val);
 	}
 	else if (displayMode == confH) {
 		setConfigTimeH(arr2, val);
@@ -113,9 +131,31 @@ void setDHum(char b[], uint8_t tmpVal) {
 	setDVal(b, tmpVal, 12, 3, FALSE);
 }
 
-void setConfigDisp(char b[], uint8_t tmpVal) {
+void setConfigChoice(char b[], uint8_t tmpVal) {
 
+	setDText(b, getSelectConfigText(tmpVal));
+}
+
+void setConfigDisp(char b[], uint8_t tmpVal) {
 	setDText(b, getDispModeText(tmpVal));
+}
+
+char* getSelectConfigText(uint8_t tmpVal){
+	switch(tmpVal){
+		case confChoiceTime:
+		return "     OF TIME    ";
+		break;
+		case confChoiceDisp:
+		return " OF DISP. MODE  ";
+		break;
+		case confChoiceSpeed:
+		return " OF DATA SPEED  ";
+		break;
+		default:
+		return "       EXIT     ";
+		break;
+		
+	}
 }
 
 char* getDispModeText(uint8_t tmpVal){
@@ -143,6 +183,12 @@ void setConfigTimeH(char b[], uint8_t tmpVal) {
 
 void setConfigTimeM(char b[], uint8_t tmpVal) {
 	char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "TIME:        Min";
+	setDText(b, text);
+	setDVal(b, tmpVal, 10, 2, TRUE);
+}
+
+void setConfigSpeed(char b[], uint8_t tmpVal) {
+	char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "SPEED:          ";
 	setDText(b, text);
 	setDVal(b, tmpVal, 10, 2, TRUE);
 }

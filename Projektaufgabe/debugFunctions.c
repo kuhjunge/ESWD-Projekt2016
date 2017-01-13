@@ -47,6 +47,12 @@
 		case confS:
 		newVal = 0x40;
 		break;
+		case confSpeed:
+		newVal = 0x40;
+		break;
+		case confOverview:
+		newVal = 0x40;
+		break;
 
 	 }
 	 setDebugLED(newVal);

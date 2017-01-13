@@ -22,8 +22,12 @@ typedef enum {
 } button_t;
 
 typedef enum {
-	dispTime, dispTimeTemp, dispTempHum, dispTimeTempHum, confH, confM, confS, confDisplay
+	dispTime, dispTimeTemp, dispTempHum, dispTimeTempHum, confH, confM, confS, confDisplay, confOverview, confSpeed
 } display_t;
+
+typedef enum {
+	confChoiceDisp, confChoiceTime, confChoiceSpeed, confChoiceExit
+} configChoice_t;
 
 typedef struct stime {
 	uint8_t hour;

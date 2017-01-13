@@ -19,6 +19,10 @@ uint8_t getNextNumber(uint8_t n, uint8_t max,  uint8_t reverse);
 
 display_t getNextDispMode(display_t last, uint8_t reverse);
 
+display_t getNextConfigChoice(configChoice_t last, uint8_t reverse);
+
+display_t setSpeed(button_t b,uint8_t *speed, display_t lastDisp, uint8_t *next);
+
 display_t setHours(button_t b,smhTime_t *nt, display_t lastDisp, uint8_t *next);
 
 display_t setMinutes(button_t b, smhTime_t *nt, display_t lastDisp, uint8_t *next);
@@ -27,7 +31,9 @@ display_t setSeconds(button_t b, smhTime_t *nt, display_t lastDisp, uint8_t *nex
 
 display_t setDisplayMode(button_t b, display_t lastDisp, uint8_t *next, display_t *newDispl);
 
-void manageConfigStates(display_t *lastDisp, button_t b, smhTime_t *newTime, uint8_t *goToThermoMode, display_t *newDisplayMode);
+configChoice_t setConfChoice(button_t b, uint8_t *next, configChoice_t *newDispl );
+
+void manageConfigStates(display_t *lastDisp, button_t b, smhTime_t *newTime, uint8_t *goToThermoMode, display_t *newDisplayMode, configChoice_t *confChoice, uint8_t *speed);
 
 uint8_t isTimeChanged(smhTime_t a, smhTime_t b, uint8_t dif);
 
@@ -76,7 +82,7 @@ uint8_t getNextNumber(uint8_t n, uint8_t max,  uint8_t reverse){
 		if (n >= max){
 			n = max - 1;
 		}
-		} else {
+	} else {
 		n++;
 		if (n >= max){
 			n=0;
@@ -105,6 +111,36 @@ display_t getNextDispMode(display_t last, uint8_t reverse){
 	}
 }
 
+display_t getNextConfigChoice(configChoice_t last, uint8_t reverse){
+	switch(last){// dispTime, dispTimeTemp, dispTempHum, dispTimeTempHum
+		case confChoiceDisp:
+		return (reverse == TRUE) ? confChoiceExit : confChoiceTime;
+		break;
+		case confChoiceTime:
+		return (reverse == TRUE) ? confChoiceDisp : confChoiceSpeed;
+		break;
+		case confChoiceSpeed:
+		return (reverse == TRUE) ? confChoiceTime : confChoiceExit;
+		break;
+		default: // confChoiceExit
+		return (reverse == TRUE) ? confChoiceSpeed : confChoiceDisp;
+		break;
+	}
+}
+
+display_t setSpeed(button_t b,uint8_t *speed, display_t lastDisp, uint8_t *next){
+	*next = FALSE;
+	if (b == enter) {
+		lastDisp = confOverview;
+		*next = TRUE;
+	}
+	else if (b == up){
+		*speed = getNextNumber(*speed ,MAX_SPEED, FALSE);
+		} else if (b == down){
+		*speed  = getNextNumber(*speed ,MAX_SPEED, TRUE);
+	}
+	return lastDisp;
+}
 display_t setHours(button_t b,smhTime_t *nt, display_t lastDisp, uint8_t *next)
 {
 	*next = FALSE;
@@ -141,6 +177,7 @@ display_t setSeconds(button_t b, smhTime_t *nt, display_t lastDisp, uint8_t *nex
 	if (b == enter) {
 		setTime(nt->hour, nt->minute, nt->second);
 		*next = TRUE;
+		lastDisp = confOverview;
 	}
 	else if (b == up){
 		nt->second = getNextNumber(nt->second ,MAX_SECONDS, FALSE);
@@ -150,11 +187,24 @@ display_t setSeconds(button_t b, smhTime_t *nt, display_t lastDisp, uint8_t *nex
 	return lastDisp;
 }
 
+configChoice_t setConfChoice(button_t b, uint8_t *next, configChoice_t *newConfChoice ){
+	*next = FALSE;
+	if (b == enter) {
+		*next = TRUE;
+	}
+	else if (b == up){
+		*newConfChoice = getNextConfigChoice(*newConfChoice, FALSE);
+		} else if (b == down){
+		*newConfChoice = getNextConfigChoice(*newConfChoice, TRUE);
+	}
+	return *newConfChoice;
+}
+
 display_t setDisplayMode(button_t b, display_t lastDisp, uint8_t *next, display_t *newDispl )
 {
 	*next = FALSE;
 	if (b == enter) {
-		lastDisp = confH;
+		lastDisp = confOverview;
 		*next = TRUE;
 	}
 	else if (b == up){
@@ -165,17 +215,46 @@ display_t setDisplayMode(button_t b, display_t lastDisp, uint8_t *next, display_
 	return lastDisp;
 }
 
-void manageConfigStates(display_t *lastDisp, button_t b, smhTime_t *newTime, uint8_t *goToThermoMode, display_t *newDisplayMode)
+void manageConfigStates(display_t *lastDisp, button_t b, smhTime_t *newTime, uint8_t *goToThermoMode, display_t *newDisplayMode, configChoice_t *confChoice, uint8_t *speed)
 {
 	uint8_t next = FALSE;
 	switch (*lastDisp)
 	{
+		case confOverview:
+			*lastDisp = confOverview;
+			 setConfChoice(b, &next, confChoice);
+			 setConfStepDisp(confOverview, *confChoice);
+			if (next == TRUE) {
+				if(*confChoice == confChoiceDisp){
+					setConfStepDisp(confDisplay, systemState.displayMode);
+					*lastDisp = confDisplay;
+				} else if (*confChoice == confChoiceTime) {
+					setConfStepDisp(confH, newTime->hour);
+					*lastDisp = confH;
+				} else if(*confChoice == confChoiceSpeed) {
+					setConfStepDisp(confSpeed, systemState.readIntervall);
+					*lastDisp = confSpeed;
+				} else {
+					*goToThermoMode = TRUE;
+				}
+			}
+		break;
+
 		case confDisplay:
 		*lastDisp = setDisplayMode(b, *lastDisp, &next, newDisplayMode);
 		setConfStepDisp(confDisplay, *newDisplayMode);
 		if (next == TRUE) {
-			setConfStepDisp(confH, newTime->hour);
+			setConfStepDisp(confOverview, confChoiceDisp);
 			systemState.displayMode = *newDisplayMode;
+		}
+		break;
+
+		case confSpeed:
+		 *lastDisp = setSpeed(b, speed, *lastDisp, &next);
+		setConfStepDisp(confSpeed, *speed);
+		if (next == TRUE) {
+			setConfStepDisp(confOverview, confChoiceSpeed);
+			systemState.readIntervall = *speed;
 		}
 		break;
 
@@ -199,7 +278,8 @@ void manageConfigStates(display_t *lastDisp, button_t b, smhTime_t *newTime, uin
 		*lastDisp = setSeconds(b, newTime, *lastDisp, &next);
 		setConfStepDisp(confS, newTime->second);
 		if (next == TRUE) {
-			*goToThermoMode = TRUE;
+			setConfStepDisp(confOverview, confChoiceTime);
+			systemState.time = *newTime;
 		}
 		break;
 
@@ -216,25 +296,23 @@ void init(void) {
 	initButton();
 }
 
-// NICHT BENUTZT BIS JETZT / EVENTUELL FEHLERHAFT
-uint8_t isTimeChanged(smhTime_t a, smhTime_t b, uint8_t dif){
-	uint16_t compa = a.second + (a.minute * 60) + (a.hour * 60 * 60);
-	uint16_t compb = a.second + (a.minute * 60) + (a.hour * 60 * 60);
-	if (compb - compa > dif){
-		return TRUE;
+uint8_t checkTime(uint8_t start, uint8_t now){
+	uint8_t comp = start + systemState.readIntervall;
+	if (comp > MAX_SECONDS - 1 && now <= systemState.readIntervall){
+		comp = comp - MAX_SECONDS;
 	}
-	return FALSE;
+	return (comp > now) ? FALSE:TRUE;
 }
 
 void thermoMode(void) {
 	uint8_t goToConfigMode = FALSE;
 	while (!goToConfigMode) {
 		setSystemTime();
-		if (systemState.time.second != ms.time.second){
-			//if (isTimeChanged(ms.time, systemState.time, 5) == TRUE){
-			setDisplay(ms, systemState.displayMode);
+		//if (systemState.time.second != ms.time.second){
+		if (checkTime(ms.time.second, systemState.time.second) == TRUE){
 			update();
 		}
+		setDisplay(ms, systemState);
 		goToConfigMode = checkForButton(enter);
 	}
 }
@@ -242,18 +320,20 @@ void thermoMode(void) {
 void configMode(void) {
 	uint8_t goToThermoMode = FALSE;
 	button_t b;
-	display_t lastDisp = confDisplay;
+	display_t lastDisp = confOverview;
 	smhTime_t newTime = systemState.time;
 	display_t newDisplayMode = systemState.displayMode;
-	setConfStepDisp(confDisplay, systemState.displayMode);
+	configChoice_t confChoice = confChoiceDisp;
+	uint8_t speed = systemState.readIntervall;
+	setConfStepDisp(lastDisp, confChoice);
 	while (!goToThermoMode) {
 		setSystemTime();
 		if (isPressed() == TRUE) {
 			b = getButton();
 			if (b == cancel) {
 				goToThermoMode = TRUE; // Abbruch, zurück!
-				} else {
-				manageConfigStates(&lastDisp, b, &newTime, &goToThermoMode, &newDisplayMode);
+			} else {
+				manageConfigStates(&lastDisp, b, &newTime, &goToThermoMode, &newDisplayMode, &confChoice, &speed);
 
 			}
 		}
