@@ -8,7 +8,9 @@
 #ifndef THERMOTYPES_H
 #define THERMOTYPES_H
 
-#include "types.h"
+// defines to be used as boolean
+#define FALSE 0
+#define TRUE !FALSE
 
 // F_CPU Notwendig damit delay mit 8Mhz arbeitet
 #define F_CPU 8000000UL 
@@ -16,6 +18,11 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+
+typedef unsigned char		uint8_t;
+
+typedef signed char		int8_t;
+
 
 typedef enum {
 	none, enter, cancel, up, down //, b0, b1, b2, b3, b4, b5, b6, b7, b8, b9

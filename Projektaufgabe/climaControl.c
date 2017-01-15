@@ -7,21 +7,26 @@
 
 #include "climaControl.h"
 
+// ------------------ Definition der Helfer Funktionen ------------------
+
 /************************************************************************/
 /* Initialisiert die Hardware, die benötigt wird umd den				*/
 /* "Luftfeuchtigkeitssensor" auszulesen                                 */
 /************************************************************************/
 void initHumidity(void);
 
+
+// --------- Implementation der im Header definierten Funktionen ---------
+
 /************************************************************************/
-/* Funktion zur initialisierung der Klima Komponenten                   */
+/* Siehe Header										                    */
 /************************************************************************/
 void initClima(void) {
 	initHumidity();
 }
 
 /************************************************************************/
-/* Dokumentation im Funktionsprototyp in der Header Datei				*/
+/* Siehe Header															*/
 /* Author : Chris Deter													*/
 /************************************************************************/
 uint8_t getHum(void) {
@@ -39,8 +44,10 @@ uint8_t getHum(void) {
 }
 
 int16_t getTemp(void) {
-	return 255; // Simulator Default Value
+	return 255; // Dummy Value
 }
+
+// --------------- Implementation der Helfer Funktionen ---------------
 
 /************************************************************************/
 /* Dokumentation im Funktionsprototyp									*/
