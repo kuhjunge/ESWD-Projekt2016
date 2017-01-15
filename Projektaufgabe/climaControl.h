@@ -10,8 +10,6 @@
 
 #include "thermoTypes.h"
 
-#if SIMULATOR < 1
-
 #define ANALOG_PORT PORTA
 #define ANALOG_DDR DDRA
 #define ANALOG_PIN_VALUE 0x04
@@ -35,7 +33,19 @@
 * Bits 4:0	MUX4:0: Analog Channel and Gain Selection Bits
 */
 #define ADMUX_VALUE 0b01100010
-#endif
+
+#define TEMPPORT PORTB
+#define TEMPPIN 0b00001000
+#define A 6
+#define B 64
+#define C 60
+#define D 10
+#define E 9
+#define F 55
+#define G 0
+#define H 480
+#define I 70
+#define J 410
 
 /************************************************************************/
 /* Funktion zur initialisierung der Klima Komponenten                   */

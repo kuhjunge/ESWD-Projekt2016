@@ -36,6 +36,11 @@ typedef enum {
 	confChoiceDisp, confChoiceTime, confChoiceSpeed, confChoiceExit
 } configChoice_t;
 
+typedef enum
+{
+	convert, read
+} transaction_t;
+
 typedef struct stime {
 	uint8_t hour;
 	uint8_t minute;
@@ -53,7 +58,6 @@ typedef struct state {
 	uint8_t readIntervall;
 	smhTime_t time;
 } state_t;
-
 
 #endif /* THERMOTYPES_H */
 
