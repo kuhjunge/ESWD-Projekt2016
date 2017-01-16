@@ -10,10 +10,24 @@
 
 #include "thermoTypes.h"
 
+#define MAX_HOURS 24
+#define MAX_MINUTES 60
+#define MAX_SECONDS 60
+
+/************************************************************************/
+/* Initialisiert die Zeit Funktionialität								*/
+/* (Interrupt und die nötigen Variablen)								*/
+/************************************************************************/
 void initTime(void);
 
+/************************************************************************/
+/* gibt die aktuelle Zeit zurück (im smhTime_T struct                   */
+/************************************************************************/
 smhTime_t getTime(void);
 
+/************************************************************************/
+/* setzt eien neue Zeit mit Stunde, Minute, Sekunde als Parameter		*/
+/************************************************************************/
 void setTime(uint8_t h, uint8_t m, uint8_t s);
 
 #endif /* TIMECONTROL_H */

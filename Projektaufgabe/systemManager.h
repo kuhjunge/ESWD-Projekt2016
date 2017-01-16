@@ -13,11 +13,11 @@
 #include "buttonControl.h"
 #include "debugFunctions.h"
 
-#define MAX_HOURS 24
-#define MAX_MINUTES 60
-#define MAX_SECONDS 60
 #define MAX_SPEED 11
 
+/************************************************************************/
+/* Startet die Ausführung des Programmes (mit Endlosschleife)           */
+/************************************************************************/
 void startThermo(void);
 
 #endif /* SYSTEMMANAGER_H */

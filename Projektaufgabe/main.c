@@ -9,7 +9,7 @@
 #include "systemManager.h"
 
 /*
-*
+* main, startet die Funktion, welche den Kontrollflusses des Programmes ausführt
 */
 int main(int argc, char** argv) {
 	startThermo();

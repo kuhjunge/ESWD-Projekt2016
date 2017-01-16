@@ -1,15 +1,58 @@
 /*
 * File:   timeControl.c
-* Author: Alexandra Scheben, Dirk Teschner, Chris Deter
+* Author: Chris Deter
 *
 * Created on 23. November 2016, 18:07
 */
 
-#include "thermoTypes.h"
+#include "timeControl.h"
 
-smhTime_t sysTime;
+smhTime_t sysTime; // Die Variable für die Systemzeit
 
-void timer1Init () {
+// ------------------ Definition der Helfer Funktionen ------------------
+
+/************************************************************************/
+/* Initialisiert den Timer Interrupt				                    */
+/************************************************************************/
+void timer1Init (void) ;
+
+/************************************************************************/
+/* Compare Interrupt A													*/
+/* setz die Zeit eine Sekunde weiter									*/
+/************************************************************************/
+ISR (TIMER1_COMPA_vect);
+
+// --------- Implementation der im Header definierten Funktionen ---------
+
+/************************************************************************/
+/* Siehe Header										                    */
+/************************************************************************/
+void initTime(void) {
+	sysTime.hour = 0;
+	sysTime.minute = 0;
+	sysTime.second = 0;
+	timer1Init();
+}
+
+/************************************************************************/
+/* Siehe Header										                    */
+/************************************************************************/
+smhTime_t getTime(void) {
+	return sysTime;
+}
+
+/************************************************************************/
+/* Siehe Header										                    */
+/************************************************************************/
+void setTime(uint8_t h, uint8_t m, uint8_t s) {
+	sysTime.hour = h;
+	sysTime.minute = m;
+	sysTime.second = s;
+}
+
+// --------------- Implementation der Helfer Funktionen ---------------
+
+void timer1Init (void) {
 	cli();
 	TCCR1A = 0x00;		//CTC ON
 	TCCR1B = 0x0D;		//Prescaler 1024; Grundfreq = 1 MHz / 1024 = 977Hz
@@ -23,39 +66,18 @@ void timer1Init () {
 	sei();
 }
 
-/************************************************************************/
-/* Compare Interrupt A													*/
-/* schaltet die PortA-LED ein und die Port B - LED aus					*/
-/************************************************************************/
 ISR (TIMER1_COMPA_vect) {
 	TCNT1 = 0x00; // Timer auf Null
 	sysTime.second++;
-	if (sysTime.second > 59) {
+	if (sysTime.second > MAX_SECONDS - 1) {
 		sysTime.second = 0;
 		sysTime.minute++;
-		if (sysTime.minute > 59) {
+		if (sysTime.minute > MAX_MINUTES - 1) {
 			sysTime.minute = 0;
 			sysTime.hour++;
-			if (sysTime.hour > 23) {
+			if (sysTime.hour > MAX_HOURS - 1) {
 				sysTime.hour = 0;
 			}
 		}
 	}
-}
-
-void initTime(void) {
-	sysTime.hour = 0;
-	sysTime.minute = 0;
-	sysTime.second = 0;
-	timer1Init();
-}
-
-smhTime_t getTime(smhTime_t* t) {
-	return sysTime;
-}
-
-void setTime(uint8_t h, uint8_t m, uint8_t s) {
-	sysTime.hour = h;
-	sysTime.minute = m;
-	sysTime.second = s;
 }
