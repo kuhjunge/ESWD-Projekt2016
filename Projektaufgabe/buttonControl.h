@@ -4,7 +4,7 @@
 *
 * Created on 27. November 2016, 15:19
 *
-* Hier werden die Buttons ENTER; CANCEL; UP; DOWN per polling abgefragt.
+* Hier werden die Buttons ENTER; CANCEL; UP; DOWN per Polling abgefragt.
 * InitButton muss vor der Verwendung von isPressed und getButton aufgerufen werden.
 */
 
@@ -19,28 +19,28 @@
 #define PINENTER 4
 #define PINCANCEL 5
 
-#if SIMULATOR < 1
+// Definieren von Buttons
 #define BUTTON_PORT PORTA
 #define BUTTON_DDR DDRA
 #define BUTTON_PIN PINA
 #define BUTTON_INIT 0b11001100;
-#endif
 
 /************************************************************************/
-/* Initialisiert die Buttonports an der HW und benötigte Variablen      */
+/* Initialisiert die Buttonports an der HW und die benötigten Variablen */
 /************************************************************************/
 void initButton(void);
 
 /************************************************************************/
-/* Prüft ob ein Button gepresst wurde. Bei wiederholten Aufruf wird der */
-/* zuletzt geprüfte Button Zustand überschrieben, sollte inzwischen ein */
-/* neuer Button gedrueckt worden sein                                   */
+/* Prüft, ob ein Button gepresst wurde. Bei wiederholtem Aufruf wird    */
+/* der zuletzt geprüfte Button Zustand überschrieben, falls inzwischen  */
+/* ein neuer Button gedrueckt wurde.                                    */
 /************************************************************************/
 uint8_t isPressed(void);
 
 /************************************************************************/
-/* gibt den zuletzt gepressten Button zurück, gibt 'none' zurück wenn   */
-/* keiner gepresst wurde - konsumiert die letzte Buttoneingabe			*/
+/* Gibt den zuletzt gedrueckten Button zurück,							*/
+/* gibt 'none' zurück wenn keiner gedrueckt wurde.						*/
+/* Konsumiert die letzte Buttoneingabe									*/
 /************************************************************************/
 button_t getButton(void);
 

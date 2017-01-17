@@ -16,7 +16,7 @@
 #define MAX_SPEED 11
 
 /************************************************************************/
-/* Startet die Ausführung des Programmes (mit Endlosschleife)           */
+/* Startet die Ausführung des Programms (mit Endlosschleife)            */
 /************************************************************************/
 void startThermo(void);
 

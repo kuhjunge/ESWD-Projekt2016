@@ -10,7 +10,7 @@
 button_t lastPressed = none; // Speichert den letzten Knopfdruck
 unsigned char stateButtons = 0; // Speichert den Status der aktuellen Knoepfe
 
-// ------------------ Definition der Helfer Funktionen ------------------
+// ------------------- Definition der Hilfsfunktionen -------------------
 
 /************************************************************************/
 /* Gibt das Bit einer bestimmten Stelle im Char zurück                  */
@@ -28,13 +28,13 @@ char toggleBit(char var, char n, char x);
 void doChange(char pin, int number);
 
 /************************************************************************/
-/* Prueft, ob sich die Eingabe für einen Button geaendert hat und v     */
-/* eranlasst doChange()													*/
+/* Prueft, ob sich die Eingabe für einen Button geaendert hat und       */
+/* veranlasst doChange()												*/
 /************************************************************************/
 void checkAndDoChange(char pin, int number);
 
 /************************************************************************/
-/* Prüft, ob ein Button gedrückt wurde für ENTER; CANCEL; UP; DOWN	    */
+/* Prüft, ob ein Button gedrueckt wurde für ENTER; CANCEL; UP; DOWN	    */
 /************************************************************************/
 void lookForPressedButton();
 

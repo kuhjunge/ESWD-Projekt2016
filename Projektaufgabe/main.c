@@ -8,9 +8,10 @@
 #include <stdlib.h>
 #include "systemManager.h"
 
-/*
-* main, startet die Funktion, welche den Kontrollflusses des Programmes ausführt
-*/
+/************************************************************************/
+/* Main, startet die Funktion,											*/
+/* welche den Kontrollflusses des Programmes ausführt                   */
+/************************************************************************/
 int main(int argc, char** argv) {
 	startThermo();
 	return (EXIT_SUCCESS);

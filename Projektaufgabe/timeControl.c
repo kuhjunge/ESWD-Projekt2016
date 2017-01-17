@@ -50,24 +50,24 @@ void setTime(uint8_t h, uint8_t m, uint8_t s) {
 	sysTime.second = s;
 }
 
-// --------------- Implementation der Helfer Funktionen ---------------
+// --------------- Implementation der Hilfsfunktionen ---------------
 
 void timer1Init (void) {
 	cli();
 	TCCR1A = 0x00;		//CTC ON
-	TCCR1B = 0x0D;		//Prescaler 1024; Grundfreq = 1 MHz / 1024 = 977Hz
+	TCCR1B = 0x0D;		//Prescaler 1024; Grundfreqenz = 1 MHz / 1024 = 977Hz
 	// mit Fuse CLKDIV8 gesetzt sind es effektiv 1MHz
 	
 	// Konfigurieren der "Output Compare Units"
 	OCR1A = 977 * 8;		// 1.000.000 / 1024 = 977 fuer eine Sekunde
 	// Nun die relevanten Interrupts aktivieren: Timer Interrupt Mask
 	TIMSK1 = (1<<1);	// Bit 1 ? OCIE1A: Timer/Counter1, Output Compare A Match Interrupt Enable
-	TCNT1 = 0x00;		// Zaehlregister des Timers noch auf Null stellen
+	TCNT1 = 0x00;		// Zaehlregister des Timers noch auf 0 stellen
 	sei();
 }
 
 ISR (TIMER1_COMPA_vect) {
-	TCNT1 = 0x00; // Timer auf Null
+	TCNT1 = 0x00; // Timer auf 0
 	sysTime.second++;
 	if (sysTime.second > MAX_SECONDS - 1) {
 		sysTime.second = 0;
