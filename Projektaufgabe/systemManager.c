@@ -130,7 +130,7 @@ void manageConfigStates(display_t *lastDisp, button_t b, smhTime_t *newTime, uin
 /* start = Sekunden zum Start des Vergleichs							*/
 /* now = Sekunden zum jetztigen Zeitpunkt								*/
 /************************************************************************/
-uint8_t checkTime(uint8_t start, uint8_t now)
+uint8_t checkTime(uint8_t start, uint8_t now);
 
 /************************************************************************/
 /* (Ausgelagert aus 'manageConfigStates()' )                            */
@@ -212,8 +212,8 @@ void startThermo(void) {
 	systemState.readIntervall = 1;
 	while (1) {
 		systemState.time = getTime();
-		thermoMode();
 		configMode();
+		thermoMode();
 	}
 }
 
@@ -514,7 +514,7 @@ void thermoMode(void) {
 void configMode(void) {
 	uint8_t goToThermoMode = FALSE;
 	button_t b;
-	display_t lastDisp = confOverview;
+	display_t lastDisp = confH;
 	smhTime_t newTime = systemState.time;
 	display_t newDisplayMode = systemState.displayMode;
 	configChoice_t confChoice = confChoiceDisp;

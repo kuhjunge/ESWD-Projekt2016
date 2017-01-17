@@ -35,7 +35,7 @@
 #define ADMUX_VALUE 0b01100010
 
 #define TEMPPORT PORTB
-#define TEMPPIN 0b00001000
+#define TEMPPIN 0b00000100
 #define A 6
 #define B 64
 #define C 60

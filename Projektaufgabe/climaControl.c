@@ -89,10 +89,9 @@ int16_t getTemp(void) {
 	
 	volatile int16_t temperature = 0;
 	
-	temperature = temperatureLSB >>1;
-	
-	if(temperatureMSB > 0)
-	temperature = -temperature;
+	temperature = temperatureLSB;
+	//if(temperatureMSB > 0)
+	//temperature = -temperature;
 	
 	// set bus to high impedance state
 	initTemp();
@@ -199,7 +198,7 @@ int OneWireReadBit(void) {
 	tickDelay(A);
 	output(TEMPPORT,0x04); // Releases the bus
 	tickDelay(E);
-	result = input(TEMPPORT) & 0x01; // Sample the bit value from the slave
+	result = input(TEMPPORT) & 0x04; // Sample the bit value from the slave
 	tickDelay(F); // Complete the time slot and 10us recovery
 	return result;
 }
@@ -210,7 +209,7 @@ void OneWireWriteByte(int data) {
 	// Loop to write each bit in the byte, LS-bit first
 	for (loop = 0; loop < 8; loop++)
 	{
-		OneWireWriteBit(data & 0x01);
+		OneWireWriteBit(data & 0x04);
 		// shift the data byte for the next bit
 		data >>= 1;
 	}
@@ -238,7 +237,7 @@ int OneWireTouchByte(int data) {
 		// shift the result to get it ready for the next bit
 		result >>= 1;
 		// If sending a '1' then read a bit else write a '0'
-		if (data & 0x01)
+		if (data & 0x04)
 		{
 			if (OneWireReadBit())
 			result |= 0x80;
