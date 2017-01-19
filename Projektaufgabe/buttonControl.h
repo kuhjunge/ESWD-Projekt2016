@@ -13,6 +13,10 @@
 
 #include "thermoTypes.h"
 
+// Definiert ob polling für die Button Erkennung im Code genutzt wird, oder Interrupts
+// Wenn FALSE = werden Interrupts zur Verarbeitung der Eingabe verwendet
+#define POLLING FALSE
+
 // Definieren von Pins
 #define PINUP PCINT0
 #define PINDOWN PCINT3

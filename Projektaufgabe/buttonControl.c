@@ -7,9 +7,6 @@
 
 #include "buttonControl.h"
 
-// Definiert ob polling für die Button Erkennung im Code genutzt wird, oder Interrupts
-#define POLLING FALSE
-
 button_t lastPressed = none; // Speichert den letzten Knopfdruck
 
 #if POLLING == TRUE
@@ -49,16 +46,16 @@ void lookForPressedButton();
 // ------------------- Interrups -------------------
 ISR(PCINT0_vect)
 {
-	if ((BUTTON_PIN & (1<<PINENTER))){
+	if ((BUTTON_PIN & (1<<PINENTER))){ // Lese Enter ein, wenn gedrückt
 		lastPressed = enter;
 	}
-	if ((BUTTON_PIN & (1<<PINCANCEL))){
+	if ((BUTTON_PIN & (1<<PINCANCEL))){ // Lese Cancel ein, wenn gedrückt
 		lastPressed = cancel;
 	}
-	if ((BUTTON_PIN & (1<<PINUP))){
+	if ((BUTTON_PIN & (1<<PINUP))){ // Lese UP ein, wenn gedrückt
 		lastPressed = up;
 	}
-	if ((BUTTON_PIN & (1<<PINDOWN))){
+	if ((BUTTON_PIN & (1<<PINDOWN))){ // Lese Down ein, wenn gedrückt
 		lastPressed = down;
 	}
 }
@@ -75,21 +72,21 @@ void initButton(void) {
 	BUTTON_DDR &= BUTTON_INIT;
 	lastPressed = none;
 	
-#if POLLING == FALSE
+	#if POLLING == FALSE
 	cli();
 	PCICR |= (1 << PCIE0);
-	PCMSK0  = (1 << PINENTER) | (1 << PINCANCEL) | (1 << PINUP) | (1 << PINDOWN);    // set PCINT4 (enter) to trigger an interrupt on state change 
+	PCMSK0  = (1 << PINENTER) | (1 << PINCANCEL) | (1 << PINUP) | (1 << PINDOWN);    // set PCINT4 (enter) to trigger an interrupt on state change
 	sei();                    // turn on interrupts
-#endif
+	#endif
 }
 
 /************************************************************************/
 /* Siehe Header                                                         */
 /************************************************************************/
 uint8_t isPressed(void) {
-#if POLLING == TRUE
+	#if POLLING == TRUE
 	lookForPressedButton();
-#endif
+	#endif
 	if (lastPressed == none) {
 		return FALSE;
 		} else {
@@ -101,11 +98,11 @@ uint8_t isPressed(void) {
 /* Siehe Header                                                         */
 /************************************************************************/
 button_t getButton(void) {
-#if POLLING == TRUE
+	#if POLLING == TRUE
 	if (lastPressed == none){
 		lookForPressedButton();
 	}
-#endif
+	#endif
 	button_t temp = lastPressed;
 	lastPressed = none;
 	return temp;

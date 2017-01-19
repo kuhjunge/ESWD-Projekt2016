@@ -236,7 +236,6 @@ void setDHum(char b[], uint8_t tmpVal) {
 }
 
 void setConfigChoice(char b[], uint8_t tmpVal) {
-
 	setDText(b, getSelectConfigText(tmpVal));
 }
 

@@ -147,18 +147,18 @@ void transactionSequence(transaction_t command) {
 	
 	// send convert command
 	if(command == convert)
-		OneWireWriteByte(0x44);
+	OneWireWriteByte(0x44);
 	// send read command
 	else if(command == read)
-		OneWireWriteByte(0xBE);
+	OneWireWriteByte(0xBE);
 }
 
 // send 'databyte' to 'port'
 void output(int bit) {
 	if(bit)
-		DDRB |= (TEMPPIN);
+	DDRB |= (TEMPPIN);
 	else
-		DDRB &= ~(TEMPPIN);
+	DDRB &= ~(TEMPPIN);
 }
 
 // read byte from 'port'
@@ -166,10 +166,10 @@ int input(unsigned port) {
 	int ret;
 	int temp = PINB & 0x04;
 	if(temp == 0)
-		ret = 0;
+	ret = 0;
 	else
-		ret = 1;
-		
+	ret = 1;
+	
 	return ret;
 }
 

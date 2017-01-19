@@ -13,7 +13,7 @@
 #define TRUE !FALSE
 
 // F_CPU Notwendig damit delay mit 8Mhz arbeitet
-#define F_CPU 8000000UL 
+#define F_CPU 8000000UL
 
 #include <avr/io.h>
 #include <avr/interrupt.h>

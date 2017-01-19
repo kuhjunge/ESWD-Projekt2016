@@ -16,11 +16,11 @@
  }
 
  void setHumDebugLED(uint8_t val){
-	setDebugLED(val);
+	 setDebugLED(val);
  }
  
  void setDisplayDebugLED(display_t val){
- //dispTime, dispTimeTemp, dispTempHum, dispTimeTempHum, confH, confM, confS, confDisplay
+	 //dispTime, dispTimeTemp, dispTempHum, dispTimeTempHum, confH, confM, confS, confDisplay
 	 uint8_t newVal = 0;
 	 switch(val){
 		 case dispTime:
@@ -41,18 +41,18 @@
 		 case confH:
 		 newVal = 0x20;
 		 break;
-		case confM:
-		newVal = 0x30;
-		break;
-		case confS:
-		newVal = 0x40;
-		break;
-		case confSpeed:
-		newVal = 0x40;
-		break;
-		case confOverview:
-		newVal = 0x40;
-		break;
+		 case confM:
+		 newVal = 0x30;
+		 break;
+		 case confS:
+		 newVal = 0x40;
+		 break;
+		 case confSpeed:
+		 newVal = 0x40;
+		 break;
+		 case confOverview:
+		 newVal = 0x40;
+		 break;
 
 	 }
 	 setDebugLED(newVal);

@@ -22,12 +22,6 @@ measuringSet_t update(void);
 void setSystemTime();
 
 /************************************************************************/
-/* Prueft, ob ein bestimmter Knopf gedrueckt wurde						*/
-/* Nur genutzt fuer das Enter, welches den Config Modus aufruft			*/
-/************************************************************************/
-int checkForButton(button_t target);
-
-/************************************************************************/
 /* Gibt die Zahl die auf 'n' folgt zurueck,								*/
 /* wird 'max' erreicht, wird 0 zurueck gegeben. 						*/
 /* Ist 'reverse' auf true, wird die naechstkleinere Zahl				*/
@@ -246,6 +240,14 @@ display_t * showConfigSeconds(display_t * lastDisp, button_t b, smhTime_t * newT
 void configSecondsExit(uint8_t next, smhTime_t * newTime);
 
 /************************************************************************/
+/* prüft ob ein Button gedrückt wurde, wenn ja dann prüft es ob der		*/
+/* gedrückte Button "Cancel" ist und setzt goToThermoMode auf TRUE		*/
+/* Wenn es sich bei dem gedrückten Button nicht um Cancel handelt, dann */
+/* wird eine Funktion zum Ändern der Displayanzeige aufgerufen			*/
+/************************************************************************/
+void changeDisplayIfButtonIsPressed( uint8_t *goToThermoMode, display_t lastDisp, smhTime_t newTime, display_t newDisplayMode, configChoice_t confChoice, uint8_t speed)
+
+/************************************************************************/
 /* Initialisiert alle benoetigten Komponenten des Systems				*/
 /************************************************************************/
 void init(void);
@@ -292,17 +294,6 @@ measuringSet_t update(void) {
 
 void setSystemTime(){
 	systemState.time = getTime();
-}
-
-int checkForButton(button_t target){
-	button_t b;
-	if (isPressed() == TRUE) {
-		b = getButton();
-		if (b == target) {
-			return TRUE;
-		}
-	}
-	return FALSE;
 }
 
 uint8_t getNextNumber(uint8_t n, uint8_t max,  uint8_t reverse){
@@ -576,15 +567,17 @@ void manageConfigStates(display_t *lastDisp, button_t b, smhTime_t *newTime, uin
 	}
 }
 
-void init(void) {
-	initDebugFeatures();
-	initTime();
-	initClima();
-	initDisplay();
-	initButton();
-	systemState.time = getTime();
-	systemState.displayMode = dispTimeTemp;
-	systemState.readIntervall = 1;
+void changeDisplayIfButtonIsPressed( uint8_t *goToThermoMode, display_t lastDisp, smhTime_t newTime, display_t newDisplayMode, configChoice_t confChoice, uint8_t speed)
+{
+	button_t b;
+	if (isPressed() == TRUE) {
+		b = getButton();
+		if (b == cancel) {
+			*goToThermoMode = TRUE; // Abbruch, zurueck!
+			} else {
+			manageConfigStates(&lastDisp, b, &newTime, goToThermoMode, &newDisplayMode, &confChoice, &speed);
+		}
+	}
 }
 
 uint8_t checkTime(uint8_t start, uint8_t now){
@@ -593,6 +586,17 @@ uint8_t checkTime(uint8_t start, uint8_t now){
 		comp = comp - MAX_SECONDS;
 	}
 	return (comp > now) ? FALSE:TRUE;
+}
+
+void init(void) {
+	initDebugFeatures();
+	initTime();
+	initClima();
+	initDisplay();
+	initButton();
+	setSystemTime();
+	systemState.displayMode = dispTimeTemp;
+	systemState.readIntervall = DEFAULT_SPEED;
 }
 
 void thermoMode(void) {
@@ -611,9 +615,9 @@ void thermoMode(void) {
 				goToConfigMode = TRUE;
 			}
 			else if (b == up){
-			systemState.displayMode = getNextDispMode(systemState.displayMode, FALSE);
-			} else if (b == down){
-			systemState.displayMode = getNextDispMode(systemState.displayMode, TRUE);
+				systemState.displayMode = getNextDispMode(systemState.displayMode, FALSE);
+				} else if (b == down){
+				systemState.displayMode = getNextDispMode(systemState.displayMode, TRUE);
 			}
 		}
 	}
@@ -621,23 +625,15 @@ void thermoMode(void) {
 
 void configMode(void) {
 	uint8_t goToThermoMode = FALSE;
-	button_t b;
 	display_t lastDisp = confOverview;
 	smhTime_t newTime = systemState.time;
 	display_t newDisplayMode = systemState.displayMode;
 	configChoice_t confChoice = confChoiceDisp;
 	uint8_t speed = systemState.readIntervall;
-	setConfStepDisp(lastDisp, confChoice);
+	setConfStepDisp(lastDisp, confChoice); // Initialanzeige im Config menu
 	while (!goToThermoMode) {
 		setSystemTime();
-		if (isPressed() == TRUE) {
-			b = getButton();
-			if (b == cancel) {
-				goToThermoMode = TRUE; // Abbruch, zurueck!
-				} else {
-				manageConfigStates(&lastDisp, b, &newTime, &goToThermoMode, &newDisplayMode, &confChoice, &speed);
-			}
-		}
+		changeDisplayIfButtonIsPressed(&goToThermoMode, lastDisp, newTime, newDisplayMode, confChoice, speed);
 	}
 }
 
@@ -668,12 +664,12 @@ void firstRunMode(void){
 					case confS:
 					lastDisp = * showConfigSeconds(&lastDisp, b, &newTime, &next);
 					if (next == TRUE) {
-						goToThermoMode = TRUE; 
+						goToThermoMode = TRUE;
 						systemState.time = newTime;
 					}
 					break;
 					default:
-					goToThermoMode = TRUE; 
+					goToThermoMode = TRUE;
 					break;
 				}
 			}
