@@ -8,7 +8,7 @@
 #include "buttonControl.h"
 
 // Definiert ob polling für die Button Erkennung im Code genutzt wird, oder Interrupts
-#define POLLING TRUE
+#define POLLING FALSE
 
 button_t lastPressed = none; // Speichert den letzten Knopfdruck
 
@@ -52,34 +52,12 @@ ISR(PCINT0_vect)
 	if ((BUTTON_PIN & (1<<PINENTER))){
 		lastPressed = enter;
 	}
-}
-
-uint8_t b;
-uint8_t c;
-uint8_t d;
-uint8_t e;
-uint8_t f;
-ISR(PCINT1_vect)
-{
-b = BUTTON_PIN;
-c = PINCANCEL;
-d = !(BUTTON_PIN & (1<<PINCANCEL));
-e = 1<<PINCANCEL;
-f = (BUTTON_PIN & (1<<PINCANCEL));
 	if ((BUTTON_PIN & (1<<PINCANCEL))){
 		lastPressed = cancel;
 	}
-}
-
-ISR(PCINT2_vect)
-{
 	if ((BUTTON_PIN & (1<<PINUP))){
 		lastPressed = up;
 	}
-}
-
-ISR(PCINT3_vect)
-{
 	if ((BUTTON_PIN & (1<<PINDOWN))){
 		lastPressed = down;
 	}
@@ -99,11 +77,8 @@ void initButton(void) {
 	
 #if POLLING == FALSE
 	cli();
-	PCICR |= (1 << PCIE0) | (1 << PCIE1) | (1 << PCIE2) | (1 << PCIE3); 
-	PCMSK0  |= (1 << PINENTER);    // set PCINT4 (enter) to trigger an interrupt on state change 
-	PCMSK1  |= (1 << PINCANCEL);
-	PCMSK2  |= (1 << PINUP);
-	PCMSK3  |= (1 << PINDOWN);
+	PCICR |= (1 << PCIE0);
+	PCMSK0  = (1 << PINENTER) | (1 << PINCANCEL) | (1 << PINUP) | (1 << PINDOWN);    // set PCINT4 (enter) to trigger an interrupt on state change 
 	sei();                    // turn on interrupts
 #endif
 }
