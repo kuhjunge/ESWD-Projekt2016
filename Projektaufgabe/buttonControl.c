@@ -7,13 +7,19 @@
 
 #include "buttonControl.h"
 
+// Definiert ob polling für die Button Erkennung im Code genutzt wird, oder Interrupts
+#define POLLING TRUE
+
 button_t lastPressed = none; // Speichert den letzten Knopfdruck
+
+#if POLLING == TRUE
+
 unsigned char stateButtons = 0; // Speichert den Status der aktuellen Knoepfe
 
 // ------------------- Definition der Hilfsfunktionen -------------------
 
 /************************************************************************/
-/* Gibt das Bit einer bestimmten Stelle im Char zurÃ¼ck                  */
+/* Gibt das Bit einer bestimmten Stelle im Char zurück                  */
 /************************************************************************/
 char getBit(char id, int position);
 
@@ -28,15 +34,58 @@ char toggleBit(char var, char n, char x);
 void doChange(char pin, int number);
 
 /************************************************************************/
-/* Prueft, ob sich die Eingabe fÃ¼r einen Button geaendert hat und       */
+/* Prueft, ob sich die Eingabe für einen Button geaendert hat und       */
 /* veranlasst doChange()												*/
 /************************************************************************/
 void checkAndDoChange(char pin, int number);
 
 /************************************************************************/
-/* PrÃ¼ft, ob ein Button gedrueckt wurde fÃ¼r ENTER; CANCEL; UP; DOWN	    */
+/* Prüft, ob ein Button gedrueckt wurde für ENTER; CANCEL; UP; DOWN	    */
 /************************************************************************/
 void lookForPressedButton();
+
+#else
+
+// ------------------- Interrups -------------------
+ISR(PCINT0_vect)
+{
+	if ((BUTTON_PIN & (1<<PINENTER))){
+		lastPressed = enter;
+	}
+}
+
+uint8_t b;
+uint8_t c;
+uint8_t d;
+uint8_t e;
+uint8_t f;
+ISR(PCINT1_vect)
+{
+b = BUTTON_PIN;
+c = PINCANCEL;
+d = !(BUTTON_PIN & (1<<PINCANCEL));
+e = 1<<PINCANCEL;
+f = (BUTTON_PIN & (1<<PINCANCEL));
+	if ((BUTTON_PIN & (1<<PINCANCEL))){
+		lastPressed = cancel;
+	}
+}
+
+ISR(PCINT2_vect)
+{
+	if ((BUTTON_PIN & (1<<PINUP))){
+		lastPressed = up;
+	}
+}
+
+ISR(PCINT3_vect)
+{
+	if ((BUTTON_PIN & (1<<PINDOWN))){
+		lastPressed = down;
+	}
+}
+
+#endif
 
 // --------- Implementation der im Header definierten Funktionen ---------
 
@@ -47,14 +96,25 @@ void initButton(void) {
 	BUTTON_PORT &= BUTTON_INIT;
 	BUTTON_DDR &= BUTTON_INIT;
 	lastPressed = none;
+	
+#if POLLING == FALSE
+	cli();
+	PCICR |= (1 << PCIE0) | (1 << PCIE1) | (1 << PCIE2) | (1 << PCIE3); 
+	PCMSK0  |= (1 << PINENTER);    // set PCINT4 (enter) to trigger an interrupt on state change 
+	PCMSK1  |= (1 << PINCANCEL);
+	PCMSK2  |= (1 << PINUP);
+	PCMSK3  |= (1 << PINDOWN);
+	sei();                    // turn on interrupts
+#endif
 }
 
 /************************************************************************/
 /* Siehe Header                                                         */
 /************************************************************************/
 uint8_t isPressed(void) {
+#if POLLING == TRUE
 	lookForPressedButton();
-
+#endif
 	if (lastPressed == none) {
 		return FALSE;
 		} else {
@@ -66,13 +126,17 @@ uint8_t isPressed(void) {
 /* Siehe Header                                                         */
 /************************************************************************/
 button_t getButton(void) {
+#if POLLING == TRUE
 	if (lastPressed == none){
 		lookForPressedButton();
 	}
+#endif
 	button_t temp = lastPressed;
 	lastPressed = none;
 	return temp;
 }
+
+#if POLLING == TRUE
 
 // --------------- Implementation der Helfer Funktionen ---------------
 
@@ -112,3 +176,5 @@ void lookForPressedButton()
 	checkAndDoChange(getBit(BUTTON_PIN, PINCANCEL), PINCANCEL);
 	checkAndDoChange(getBit(BUTTON_PIN, PINENTER), PINENTER);
 }
+
+#endif

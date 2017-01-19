@@ -597,6 +597,7 @@ uint8_t checkTime(uint8_t start, uint8_t now){
 
 void thermoMode(void) {
 	uint8_t goToConfigMode = FALSE;
+	button_t b;
 	while (!goToConfigMode) {
 		setSystemTime();
 		//if (systemState.time.second != ms.time.second){
@@ -604,7 +605,17 @@ void thermoMode(void) {
 			update();
 		}
 		setDisplay(ms, systemState);
-		goToConfigMode = checkForButton(enter);
+		if (isPressed() == TRUE) {
+			b = getButton();
+			if (b == enter){
+				goToConfigMode = TRUE;
+			}
+			else if (b == up){
+			systemState.displayMode = getNextDispMode(systemState.displayMode, FALSE);
+			} else if (b == down){
+			systemState.displayMode = getNextDispMode(systemState.displayMode, TRUE);
+			}
+		}
 	}
 }
 

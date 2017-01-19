@@ -66,7 +66,7 @@ uint8_t getHum(void) {
 	return (result > ANALOG_MAX_PERCENT) ? ANALOG_MAX_PERCENT : result;
 }
 
-uint16_t getTemp(void) {
+int16_t getTemp(void) {
 	
 	// transaction sequence with CONVERT T command
 	transactionSequence(convert);
@@ -110,7 +110,7 @@ uint16_t getTemp(void) {
 	// set bus to high impedance state
 	initTemp();
 	
-	return temperature;
+	return (int16_t) temperature;
 }
 
 // --------------- Implementation der Helfer Funktionen ---------------

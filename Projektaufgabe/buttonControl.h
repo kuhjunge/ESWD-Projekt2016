@@ -14,16 +14,16 @@
 #include "thermoTypes.h"
 
 // Definieren von Pins
-#define PINUP 0
-#define PINDOWN 3
-#define PINENTER 4
-#define PINCANCEL 5
+#define PINUP PCINT0
+#define PINDOWN PCINT3
+#define PINENTER PCINT4
+#define PINCANCEL PCINT5
 
 // Definieren von Buttons
 #define BUTTON_PORT PORTA
 #define BUTTON_DDR DDRA
 #define BUTTON_PIN PINA
-#define BUTTON_INIT 0b11001100;
+#define BUTTON_INIT 0b11000110;
 
 /************************************************************************/
 /* Initialisiert die Buttonports an der HW und die benötigten Variablen */
