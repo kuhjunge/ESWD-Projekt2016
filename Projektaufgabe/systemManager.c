@@ -245,8 +245,8 @@ void configSecondsExit(uint8_t next, smhTime_t * newTime);
 /* Wenn es sich bei dem gedrueckten Button nicht um Cancel handelt, dann*/
 /* wird eine Funktion zum uendern der Displayanzeige aufgerufen         */
 /************************************************************************/
-void changeDisplayIfButtonIsPressed(uint8_t *goToThermoMode, display_t lastDisp,
-        smhTime_t newTime, display_t newDisplayMode, configChoice_t confChoice, uint8_t speed);
+void changeDisplayIfButtonIsPressed(uint8_t *goToThermoMode, display_t* lastDisp,
+smhTime_t* newTime, display_t* newDisplayMode, configChoice_t* confChoice, uint8_t* speed);
 
 /************************************************************************/
 /* Initialisiert alle benoetigten Komponenten des Systems               */
@@ -546,15 +546,15 @@ void manageConfigStates(display_t *lastDisp, button_t b, smhTime_t *newTime,
     }
 }
 
-void changeDisplayIfButtonIsPressed(uint8_t *goToThermoMode, display_t lastDisp,
-        smhTime_t newTime, display_t newDisplayMode, configChoice_t confChoice, uint8_t speed) {
+void changeDisplayIfButtonIsPressed(uint8_t *goToThermoMode, display_t* lastDisp,
+        smhTime_t* newTime, display_t* newDisplayMode, configChoice_t* confChoice, uint8_t* speed) {
     button_t b;
     if (isPressed() == TRUE) {
         b = getButton();
         if (b == cancel) {
             *goToThermoMode = TRUE; // Abbruch, zurueck!
         } else {
-            manageConfigStates(&lastDisp, b, &newTime, goToThermoMode, &newDisplayMode, &confChoice, &speed);
+            manageConfigStates(lastDisp, b, newTime, goToThermoMode, newDisplayMode, confChoice, speed);
         }
     }
 }
@@ -611,7 +611,7 @@ void configMode(void) {
     setConfStepDisp(lastDisp, confChoice); // Initialanzeige im Config menu
     while (!goToThermoMode) {
         setSystemTime();
-        changeDisplayIfButtonIsPressed(&goToThermoMode, lastDisp, newTime, newDisplayMode, confChoice, speed);
+        changeDisplayIfButtonIsPressed(&goToThermoMode, &lastDisp, &newTime, &newDisplayMode, &confChoice, &speed);
     }
 }
 

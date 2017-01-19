@@ -10,10 +10,10 @@
 
 #include "thermoTypes.h"
 
-// Maximale Größe der Array im Controller des Displays
+// Maximale Groesse der Array im Controller des Displays
 #define DISPLAY_ARRAY_SIZE_FOR_CONTROLLER 41
 
-// Maximale Größe der Arrays in Disp Set
+// Maximale Groesse der Arrays in Disp Set
 #define DISPLAY_ARRAY_SIZE_FOR_SOFTWARE 17 
 
 /************************************************************************/

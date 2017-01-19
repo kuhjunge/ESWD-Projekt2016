@@ -16,7 +16,7 @@ uint8_t seconds = 0; // lokale Variable zur Steuerung des Toggle Mode der Anzeig
 /* Wandelt eine Integer Zahl in eine Char Represenation der Zahl um     */
 /* der Erste Parameter ist die Eingabe Zahl								*/
 /* der Zweite Parameter ist das Ausgabe Array, welches von der Funktion	*/
-/* auch zurï¿½ck gegeben wird.											*/
+/* auch zurueck gegeben wird.											*/
 /************************************************************************/
 char* itoa(int i, char b[]);
 
@@ -213,11 +213,10 @@ void setDTime(char b[], smhTime_t* t) {
 }
 
 void setDTemp(char b[], int16_t tmpVal) {
-    char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "TEMP:         Â°C";
+    char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "TEMP:         °C";
     //text[14] = 0xDF; // Versuche das Grad Zeichen korrekt einzusetzen fuer Display
     setDText(b, text);
     setDVal(b, tmpVal, 9, 4, FALSE);
-
 }
 
 void setDHum(char b[], uint8_t tmpVal) {
