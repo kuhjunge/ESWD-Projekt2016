@@ -1,19 +1,19 @@
 /*
-* File:   buttonControl.h
-* Author: Alexandra Scheben, Dirk Teschner, Chris Deter
-*
-* Created on 27. November 2016, 15:19
-*
-* Hier werden die Buttons ENTER; CANCEL; UP; DOWN per Polling abgefragt.
-* InitButton muss vor der Verwendung von isPressed und getButton aufgerufen werden.
-*/
+ * File:   buttonControl.h
+ * Author: Alexandra Scheben, Dirk Teschner, Chris Deter
+ *
+ * Created on 27. November 2016, 15:19
+ *
+ * Hier werden die Buttons ENTER; CANCEL; UP; DOWN per Polling abgefragt.
+ * InitButton muss vor der Verwendung von isPressed und getButton aufgerufen werden.
+ */
 
 #ifndef BUTTONCONTROL_H
 #define BUTTONCONTROL_H
 
 #include "thermoTypes.h"
 
-// Definiert ob polling für die Button Erkennung im Code genutzt wird, oder Interrupts
+// Definiert ob polling fuer die Button Erkennung im Code genutzt wird, oder Interrupts
 // Wenn FALSE = werden Interrupts zur Verarbeitung der Eingabe verwendet
 #define POLLING FALSE
 
@@ -30,20 +30,20 @@
 #define BUTTON_INIT 0b11000110;
 
 /************************************************************************/
-/* Initialisiert die Buttonports an der HW und die benötigten Variablen */
+/* Initialisiert die Buttonports an der HW und die benoetigten Variablen*/
 /************************************************************************/
 void initButton(void);
 
 /************************************************************************/
-/* Prüft, ob ein Button gepresst wurde. Bei wiederholtem Aufruf wird    */
-/* der zuletzt geprüfte Button Zustand überschrieben, falls inzwischen  */
+/* Prueft, ob ein Button gepresst wurde. Bei wiederholtem Aufruf wird   */
+/* der zuletzt gepruefte Button Zustand ueberschrieben, falls inzwischen*/
 /* ein neuer Button gedrueckt wurde.                                    */
 /************************************************************************/
 uint8_t isPressed(void);
 
 /************************************************************************/
-/* Gibt den zuletzt gedrueckten Button zurück,							*/
-/* gibt 'none' zurück wenn keiner gedrueckt wurde.						*/
+/* Gibt den zuletzt gedrueckten Button zurueck,                         */
+/* gibt 'none' zurueck wenn keiner gedrueckt wurde.						*/
 /* Konsumiert die letzte Buttoneingabe									*/
 /************************************************************************/
 button_t getButton(void);

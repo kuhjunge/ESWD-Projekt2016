@@ -1,9 +1,9 @@
 /*
-* File:   systemManager.h
-* Author: Alexandra Scheben, Dirk Teschner, Chris Deter
-*
-* Created on 6. Dezember 2016, 13:08
-*/
+ * File:   systemManager.h
+ * Author: Alexandra Scheben, Dirk Teschner, Chris Deter
+ *
+ * Created on 6. Dezember 2016, 13:08
+ */
 
 #ifndef SYSTEMMANAGER_H
 #define SYSTEMMANAGER_H
@@ -17,7 +17,7 @@
 #define MAX_SPEED 11 // Langsamste Abfragegeschwindigkeit (bei 11, maximal 10)
 
 /************************************************************************/
-/* Startet die Ausführung des Programms (mit Endlosschleife)            */
+/* Startet die Ausfuehrung des Programms (mit Endlosschleife)           */
 /************************************************************************/
 void startThermo(void);
 
