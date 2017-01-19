@@ -11,11 +11,9 @@
 
 void transactionSequence(transaction_t command);
 
-void output(unsigned, int);
+void output(int);
 
 int input(unsigned);
-
-void tickDelay(int);
 
 int OneWireTouchReset(void);
 
@@ -68,7 +66,8 @@ uint8_t getHum(void) {
 	return (result > ANALOG_MAX_PERCENT) ? ANALOG_MAX_PERCENT : result;
 }
 
-int16_t getTemp(void) {
+uint16_t getTemp(void) {
+	
 	// transaction sequence with CONVERT T command
 	transactionSequence(convert);
 	
@@ -78,18 +77,33 @@ int16_t getTemp(void) {
 	// transaction sequence with READ SCRATCHPAD command
 	transactionSequence(read);
 	
-	// set bus to read-modus and read scratchpad-status and crc
-	volatile int8_t temperatureLSB = 0;
-	volatile int8_t temperatureMSB = 0;
-	//int8_t crc;
+	// set bus to read-modus and read scratchpad-status
+	volatile uint8_t temperatureLSB = 0;
+	volatile uint8_t temperatureMSB = 0;
+	volatile uint8_t userByte1 = 0;
+	volatile uint8_t userByte2 = 0;
+	volatile uint8_t reserved1 = 0;
+	volatile uint8_t reserved2 = 0;
+	volatile uint8_t countRemain = 0;
+	volatile uint8_t countPerC = 0;
+	volatile uint8_t crc = 0;
+	volatile uint16_t temperature = 0;
+	
 	
 	// get both temperature bytes
 	temperatureLSB = OneWireReadByte();
 	temperatureMSB = OneWireReadByte();
+	userByte1 = OneWireReadByte();
+	userByte2 = OneWireReadByte();
+	reserved1 = OneWireReadByte();
+	reserved2 = OneWireReadByte();
+	countRemain = OneWireReadByte();
+	countPerC = OneWireReadByte();
+	crc = OneWireReadByte();
 	
-	volatile int16_t temperature = 0;
+	temperature = temperatureLSB >> 1;
 	
-	temperature = temperatureLSB;
+	
 	//if(temperatureMSB > 0)
 	//temperature = -temperature;
 	
@@ -116,9 +130,11 @@ void initHumidity(void){
 
 void initTemp()
 {
+	cli();
 	// Set TEMPPIN to high impedance state
-	DDRB &= ~(TEMPPIN);
-	PORTB |= (TEMPPIN);
+	DDRB |= (TEMPPIN);
+	PORTB &= ~(TEMPPIN);
+	sei();
 }
 
 void transactionSequence(transaction_t command) {
@@ -131,44 +147,46 @@ void transactionSequence(transaction_t command) {
 	
 	// send convert command
 	if(command == convert)
-	OneWireWriteByte(0x44);
+		OneWireWriteByte(0x44);
 	// send read command
 	else if(command == read)
-	OneWireWriteByte(0xBE);
+		OneWireWriteByte(0xBE);
 }
 
 // send 'databyte' to 'port'
-void output(unsigned port, int databyte) {
-	
-	PORTB = databyte;
+void output(int bit) {
+	if(bit)
+		DDRB |= (TEMPPIN);
+	else
+		DDRB &= ~(TEMPPIN);
 }
 
 // read byte from 'port'
 int input(unsigned port) {
-	return PINB;
+	int ret;
+	int temp = PINB & 0x04;
+	if(temp == 0)
+		ret = 0;
+	else
+		ret = 1;
+		
+	return ret;
 }
 
-
-// Pause for exactly 'tick' number of ticks = 0.25us
-void tickDelay(int tick) {
-	for(int i = 0; i < tick; i++)
-	_delay_us(1);
-}
 
 // Generate a 1-Wire reset, return 1 if no presence detect was found,
 // return 0 otherwise.
 int OneWireTouchReset(void) {
 	volatile int result;
 	
-	tickDelay(G);
+	_delay_us(G);
 	
-	output(TEMPPORT, 0x00); // Drives DQ low
-	tickDelay(H);
-	output(TEMPPORT, 0x04); // Releases the bus
-	tickDelay(I);
-	result = input(TEMPPORT) ^ 0x04; // Sample for presence pulse from slave
-	tickDelay(J); // Complete the reset sequence recovery
-	PORTA = result;
+	output(0); // Drives DQ low
+	_delay_us(H);
+	output(1); // Releases the bus
+	_delay_us(I);
+	result = input(TEMPPORT);// ^ 0x04; // Sample for presence pulse from slave
+	_delay_us(J); // Complete the reset sequence recovery
 	return result;
 }
 
@@ -176,30 +194,30 @@ int OneWireTouchReset(void) {
 void OneWireWriteBit(int bit) {
 	if(bit) {
 		// Write '1' bit
-		output(TEMPPORT,0x00); // Drives DQ low
-		tickDelay(A);
-		output(TEMPPORT,0x04); // Releases the bus
-		tickDelay(B); // Complete the time slot and 10us recovery
+		output(0); // Drives DQ low
+		_delay_us(A);
+		output(1); // Releases the bus
+		_delay_us(B); // Complete the time slot and 10us recovery
 	}
 	else
 	{
 		// Write '0' bit
-		output(TEMPPORT,0x00); // Drives DQ low
-		tickDelay(C);
-		output(TEMPPORT,0x04); // Releases the bus
-		tickDelay(D);
+		output(0); // Drives DQ low
+		_delay_us(C);
+		output(1); // Releases the bus
+		_delay_us(D);
 	}
 }
 
 // Read a bit from the 1-Wire bus and return it. Provide 10us recovery time.
 int OneWireReadBit(void) {
 	int result;
-	output(TEMPPORT,0x00); // Drives DQ low
-	tickDelay(A);
-	output(TEMPPORT,0x04); // Releases the bus
-	tickDelay(E);
-	result = input(TEMPPORT) & 0x04; // Sample the bit value from the slave
-	tickDelay(F); // Complete the time slot and 10us recovery
+	output(0); // Drives DQ low
+	_delay_us(A);
+	output(1); // Releases the bus
+	_delay_us(E);
+	result = input(TEMPPORT); // Sample the bit value from the slave
+	_delay_us(F); // Complete the time slot and 10us recovery
 	return result;
 }
 
