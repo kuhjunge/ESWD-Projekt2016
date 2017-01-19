@@ -69,7 +69,7 @@ ISR(PCINT0_vect) {
 /************************************************************************/
 void initButton(void) {
     BUTTON_PORT &= BUTTON_INIT;
-    BUTTON_DDR &= BUTTON_INIT;S
+    BUTTON_DDR &= BUTTON_INIT;
     lastPressed = none;
 
 #if POLLING == FALSE

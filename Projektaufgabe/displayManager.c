@@ -213,7 +213,7 @@ void setDTime(char b[], smhTime_t* t) {
 }
 
 void setDTemp(char b[], int16_t tmpVal) {
-    char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "TEMP:         �C";
+    char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "TEMP:         °C";
     //text[14] = 0xDF; // Versuche das Grad Zeichen korrekt einzusetzen fuer Display
     setDText(b, text);
     setDVal(b, tmpVal, 9, 4, FALSE);

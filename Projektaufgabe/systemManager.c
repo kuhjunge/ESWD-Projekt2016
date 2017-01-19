@@ -246,7 +246,7 @@ void configSecondsExit(uint8_t next, smhTime_t * newTime);
 /* wird eine Funktion zum uendern der Displayanzeige aufgerufen         */
 /************************************************************************/
 void changeDisplayIfButtonIsPressed(uint8_t *goToThermoMode, display_t lastDisp,
-        smhTime_t newTime, display_t newDisplayMode, configChoice_t confChoice, uint8_t speed)
+        smhTime_t newTime, display_t newDisplayMode, configChoice_t confChoice, uint8_t speed);
 
 /************************************************************************/
 /* Initialisiert alle benoetigten Komponenten des Systems               */
