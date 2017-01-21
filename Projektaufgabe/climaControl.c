@@ -76,43 +76,54 @@ int16_t getTemp(void) {
     // transaction sequence with CONVERT T command
     transactionSequence(convert);
 
-    // wait for temperature conversion
-    _delay_ms(750);
+    // wait for temperature conversion	
+	while(!OneWireReadBit());
 
     // transaction sequence with READ SCRATCHPAD command
     transactionSequence(read);
 
     // set bus to read-modus and read scratchpad-status
-    volatile uint8_t temperatureLSB = 0;
-    volatile uint8_t temperatureMSB = 0;
-    volatile uint8_t userByte1 = 0;
-    volatile uint8_t userByte2 = 0;
-    volatile uint8_t reserved1 = 0;
-    volatile uint8_t reserved2 = 0;
-    volatile uint8_t countRemain = 0;
-    volatile uint8_t countPerC = 0;
-    volatile uint8_t crc = 0;
-    volatile uint16_t temperature = 0;
+	int8_t temperatureArray[9];
+    //volatile int8_t temperatureLSB = 0;
+    //volatile int8_t temperatureMSB = 0;
+    //volatile int8_t userByte1 = 0;
+    //volatile int8_t userByte2 = 0;
+    //volatile int8_t reserved1 = 0;
+    //volatile int8_t reserved2 = 0;
+    //volatile int8_t countRemain = 0;
+    //volatile int8_t countPerC = 0;
+    //volatile int8_t crc = 0;
+	volatile int8_t temperatureRead = 0;
+    volatile float temperature = 0;
 
 
     // get both temperature bytes
-    temperatureLSB = OneWireReadByte();
-    temperatureMSB = OneWireReadByte();
-    userByte1 = OneWireReadByte();
-    userByte2 = OneWireReadByte();
-    reserved1 = OneWireReadByte();
-    reserved2 = OneWireReadByte();
-    countRemain = OneWireReadByte();
-    countPerC = OneWireReadByte();
-    crc = OneWireReadByte();
+    temperatureArray[0] = OneWireReadByte();
+    temperatureArray[1] = OneWireReadByte();
+    temperatureArray[2] = OneWireReadByte();
+    temperatureArray[3] = OneWireReadByte();
+    temperatureArray[4] = OneWireReadByte();
+    temperatureArray[5] = OneWireReadByte();
+    temperatureArray[6] = OneWireReadByte();
+    temperatureArray[7] = OneWireReadByte();
+    temperatureArray[8] = OneWireReadByte();
+	
+	temperatureRead = temperatureArray[0] >> 1;
+	
+	temperature = temperatureRead - 0.25 + ((float)(temperatureArray[7] - temperatureArray[6]) / (float)temperatureArray[7]);
 
-    temperature = temperatureLSB >> 1;
+	// internal representation
+	temperature *= 10;
+	
+	// add the decimal place
+	if(temperatureArray[0] & 0x1)
+		temperature += 5;
 
+	// if the temperature is negative, negate the temperature value
+    if(temperatureArray[1] > 0)
+		temperature = -temperature;
 
-    //if(temperatureMSB > 0)
-    //temperature = -temperature;
-
-    // set bus to high impedance state
+    // reset bus
     initTemp();
 
     return (int16_t) temperature;
@@ -160,7 +171,7 @@ void transactionSequence(transaction_t command) {
 // send 'databyte' to 'port'
 
 void output(int bit) {
-    if (bit)
+    if (!bit)
         DDRB |= (TEMPPIN);
     else
         DDRB &= ~(TEMPPIN);
@@ -234,7 +245,7 @@ void OneWireWriteByte(int data) {
     int loop;
     // Loop to write each bit in the byte, LS-bit first
     for (loop = 0; loop < 8; loop++) {
-        OneWireWriteBit(data & 0x04);
+        OneWireWriteBit(data & 0x01);
         // shift the data byte for the next bit
         data >>= 1;
     }
