@@ -1,13 +1,12 @@
 /*
  * File:   displayControl.c
- * Author: Dirk Teschner, Chris Deter
  *
  * Created on 27. November 2016, 14:03
  */
 
 #include "climaControl.h"
 
-// ------------------ Definition der Helfer Funktionen ------------------
+// ------------------ Definition der Hilfsfunktionen ------------------
 
 void transactionSequence(transaction_t command);
 
@@ -25,14 +24,15 @@ void OneWireWriteByte(int);
 
 int OneWireReadByte(void);
 
-int OneWireTouchByte(int);
-
-void OneWireBlock(unsigned char *, int);
-
+/************************************************************************/
+/* Initialisiert die Hardware, die benoetigt wird, um den				*/
+/* Temperatursensor auszulesen							                */
+/* Author : Alexandra Scheben, Dirk Teschner                            */
+/************************************************************************/
 void initTemp();
 
 /************************************************************************/
-/* Initialisiert die Hardware, die benoetigt wird umd den				*/
+/* Initialisiert die Hardware, die benoetigt wird, um den				*/
 /* "Luftfeuchtigkeitssensor" auszulesen                                 */
 /* Author : Chris Deter                                                 */
 /************************************************************************/
@@ -43,7 +43,7 @@ void initHumidity(void);
 
 /************************************************************************/
 /* Siehe Header                                                         */
-/* Author : Chris Deter, Dirk Teschner                                  */
+/* Author : Chris Deter, Alexandra Scheben, Dirk Teschner               */
 /************************************************************************/
 void initClima(void) {
     initHumidity();
@@ -69,35 +69,25 @@ uint8_t getHum(void) {
 }
 
 /************************************************************************/
-/* Siehe Header															*/
-/* Author : Dirk Teschner												*/
+/* 																		*/
+/* Author : Alexandra Scheben, Dirk Teschner							*/
 /************************************************************************/
 int16_t getTemp(void) {
-    // transaction sequence with CONVERT T command
+    // Transaktionssequenz mit dem CONVERT T Kommando
     transactionSequence(convert);
 
-    // wait for temperature conversion	
+    // Warten auf das Ende der Temperaturkonvertierung	
 	while(!OneWireReadBit());
 
-    // transaction sequence with READ SCRATCHPAD command
+    // Transaktionssequenz mit dem READ SCRATCHPAD Kommando
     transactionSequence(read);
 
-    // set bus to read-modus and read scratchpad-status
+    // --------------- Scratchpad Daten auslesen ---------------
+	
 	int8_t temperatureArray[9];
-    //volatile int8_t temperatureLSB = 0;
-    //volatile int8_t temperatureMSB = 0;
-    //volatile int8_t userByte1 = 0;
-    //volatile int8_t userByte2 = 0;
-    //volatile int8_t reserved1 = 0;
-    //volatile int8_t reserved2 = 0;
-    //volatile int8_t countRemain = 0;
-    //volatile int8_t countPerC = 0;
-    //volatile int8_t crc = 0;
 	volatile int8_t temperatureRead = 0;
     volatile float temperature = 0;
 
-
-    // get both temperature bytes
     temperatureArray[0] = OneWireReadByte();
     temperatureArray[1] = OneWireReadByte();
     temperatureArray[2] = OneWireReadByte();
@@ -108,28 +98,26 @@ int16_t getTemp(void) {
     temperatureArray[7] = OneWireReadByte();
     temperatureArray[8] = OneWireReadByte();
 	
+	// Abschneiden des letzten Bits, weil dies nur die Nachkommastelle angibt
 	temperatureRead = temperatureArray[0] >> 1;
 	
+	// Temperatur mit hoeherer Genauigkeit berechnen
 	temperature = temperatureRead - 0.25 + ((float)(temperatureArray[7] - temperatureArray[6]) / (float)temperatureArray[7]);
 
-	// internal representation
+	// Interne Repraesentation
 	temperature *= 10;
-	
-	// add the decimal place
-	if(temperatureArray[0] & 0x1)
-		temperature += 5;
 
-	// if the temperature is negative, negate the temperature value
+	// Wenn die Temperatur negativ ist, den Wert negieren
     if(temperatureArray[1] > 0)
 		temperature = -temperature;
 
-    // reset bus
+    // Bus zuruecksetzen
     initTemp();
 
     return (int16_t) temperature;
 }
 
-// --------------- Implementation der Helfer Funktionen ---------------
+// --------------- Implementation der Hilfsfunktionen ---------------
 
 /************************************************************************/
 /* Dokumentation im Funktionsprototyp									*/
@@ -144,44 +132,59 @@ void initHumidity(void) {
     sei(); // Sicherstellen, dass Interrupts wieder an sind
 }
 
+/************************************************************************/
+/* Dokumentation im Funktionsprototyp									*/
+/* Author : Alexandra Scheben, Dirk Teschner							*/
+/************************************************************************/
 void initTemp() {
     cli();
-    // Set TEMPPIN to high impedance state
-    DDRB |= (TEMPPIN);
-    PORTB &= ~(TEMPPIN);
+    // DDR und PORT Register des Temperatursensors werden so eingestellt,
+	// dass der PIN standartmaessig auf logisch 1 gehalten wird
+    TEMPDDR |= (TEMPPIN);
+    TEMPPORT &= ~(TEMPPIN);
     sei();
 }
 
-void transactionSequence(transaction_t command) {
 
-    // initialize bus
+/************************************************************************/
+/* Transaktionssequenz, die entweder ein CONVERT T oder READ SCRATCHPAD */
+/* Kommando an den Temperatursensor sendet							    */
+/* Author : Alexandra Scheben, Dirk Teschner                            */
+/************************************************************************/
+void transactionSequence(transaction_t command) {
+    // Bus zuruecksetzen
     OneWireTouchReset();
 
-    // skip ROM
+    // SKIP ROM
     OneWireWriteByte(0xCC);
 
-    // send convert command
+    // CONVERT T Kommando senden
     if (command == convert)
         OneWireWriteByte(0x44);
-        // send read command
+    // READ SCRATCHPAD Kommando senden
     else if (command == read)
         OneWireWriteByte(0xBE);
 }
 
-// send 'databyte' to 'port'
-
+/************************************************************************/
+/* Setzt das DDR Register des Temperatursensors,						*/
+/* um entsprechendes Bit zu senden										*/
+/* Author : Alexandra Scheben, Dirk Teschner                            */
+/************************************************************************/
 void output(int bit) {
     if (!bit)
-        DDRB |= (TEMPPIN);
+        TEMPDDR |= (TEMPPIN);
     else
-        DDRB &= ~(TEMPPIN);
+        TEMPDDR &= ~(TEMPPIN);
 }
 
-// read byte from 'port'
-
+/************************************************************************/
+/* Liest ein Bit des an den Temperatursensor angeschlossenen Pins		*/
+/* Author : Alexandra Scheben, Dirk Teschner                            */
+/************************************************************************/
 int input(unsigned port) {
     int ret;
-    int temp = PINB & 0x04;
+    int temp = TEMPPINREGISTER & TEMPPIN;
     if (temp == 0)
         ret = 0;
     else
@@ -191,9 +194,13 @@ int input(unsigned port) {
 }
 
 
-// Generate a 1-Wire reset, return 1 if no presence detect was found,
-// return 0 otherwise.
-
+/************************************************************************/
+/* OneWire Touch Reset													*/
+/* Returnt 1, wenn kein angeschlossenes Gerät erkannt wurde, ansonsten 0*/
+/* Implementation entsprechend der Beispielfunktion aus dem				*/
+/* "Application Note zum 1-Wire Protokoll.pdf"							*/
+/* Author : Alexandra Scheben, Dirk Teschner                            */
+/************************************************************************/
 int OneWireTouchReset(void) {
     volatile int result;
 
@@ -208,8 +215,13 @@ int OneWireTouchReset(void) {
     return result;
 }
 
-// Send a 1-Wire write bit. Provide 10us recovery time.
-
+/************************************************************************/
+/* Sendet ein Bit ueber den OneWire Kanal								*/
+/* Haelt 10 µs Erholungszeit ein										*/
+/* Implementation entsprechend der Beispielfunktion aus dem				*/
+/* "Application Note zum 1-Wire Protokoll.pdf"							*/
+/* Author : Alexandra Scheben, Dirk Teschner                            */
+/************************************************************************/
 void OneWireWriteBit(int bit) {
     if (bit) {
         // Write '1' bit
@@ -226,8 +238,13 @@ void OneWireWriteBit(int bit) {
     }
 }
 
-// Read a bit from the 1-Wire bus and return it. Provide 10us recovery time.
-
+/************************************************************************/
+/* Empfaengt ein Bit ueber den OneWire Kanal und gibt es zurueck		*/
+/* Haelt 10 µs Erholungszeit ein										*/
+/* Implementation entsprechend der Beispielfunktion aus dem				*/
+/* "Application Note zum 1-Wire Protokoll.pdf"							*/
+/* Author : Alexandra Scheben, Dirk Teschner                            */
+/************************************************************************/
 int OneWireReadBit(void) {
     int result;
     output(0); // Drives DQ low
@@ -239,8 +256,12 @@ int OneWireReadBit(void) {
     return result;
 }
 
-// Write 1-Wire data byte
-
+/************************************************************************/
+/* Sendet ein Byte ueber den OneWire Kanal								*/
+/* Implementation entsprechend der Beispielfunktion aus dem				*/
+/* "Application Note zum 1-Wire Protokoll.pdf"							*/
+/* Author : Alexandra Scheben, Dirk Teschner                            */
+/************************************************************************/
 void OneWireWriteByte(int data) {
     int loop;
     // Loop to write each bit in the byte, LS-bit first
@@ -251,8 +272,12 @@ void OneWireWriteByte(int data) {
     }
 }
 
-// Read 1-Wire data byte and return it
-
+/************************************************************************/
+/* Empfaengt ein Byte ueber den OneWire Kanal und gibt es zurueck		*/
+/* Implementation entsprechend der Beispielfunktion aus dem				*/
+/* "Application Note zum 1-Wire Protokoll.pdf"							*/
+/* Author : Alexandra Scheben, Dirk Teschner                            */
+/************************************************************************/
 int OneWireReadByte(void) {
     int loop, result = 0;
     for (loop = 0; loop < 8; loop++) {
@@ -263,33 +288,4 @@ int OneWireReadByte(void) {
             result |= 0x80;
     }
     return result;
-}
-
-// Write a 1-Wire data byte and return the sampled result.
-
-int OneWireTouchByte(int data) {
-    int loop, result = 0;
-    for (loop = 0; loop < 8; loop++) {
-        // shift the result to get it ready for the next bit
-        result >>= 1;
-        // If sending a '1' then read a bit else write a '0'
-        if (data & 0x04) {
-            if (OneWireReadBit())
-                result |= 0x80;
-        } else
-            OneWireWriteBit(0);
-
-        // shift the data byte for the next bit
-        data >>= 1;
-    }
-    return result;
-}
-
-// Write a block 1-Wire data bytes and return the sampled result in the same buffer.
-
-void OneWireBlock(unsigned char *data, int data_len) {
-    int loop;
-    for (loop = 0; loop < data_len; loop++) {
-        data[loop] = OneWireTouchByte(data[loop]);
-    }
 }

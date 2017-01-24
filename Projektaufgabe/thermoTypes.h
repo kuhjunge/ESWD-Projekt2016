@@ -23,7 +23,7 @@ typedef unsigned char uint8_t;
 typedef signed char int8_t;
 
 /************************************************************************/
-/* Enum zur Verwaltung der Button eingaben                              */
+/* Enum zur Verwaltung der Buttoneingaben                              */
 /************************************************************************/
 typedef enum {
     none, enter, cancel, up, down
@@ -31,7 +31,7 @@ typedef enum {
 } button_t;
 
 /************************************************************************/
-/* Enum zum Verwaltung der möglichen Display Anzeigen                   */
+/* Enum zur Verwaltung der moeglichen Displayanzeigen                   */
 /************************************************************************/
 typedef enum {
     dispTime, dispTimeTemp, dispTempHum, dispTimeTempHum, confH, confM, confS,
@@ -39,20 +39,21 @@ typedef enum {
 } display_t;
 
 /************************************************************************/
-/* Enum für die Optionen im Configurationsmodus                         */
+/* Enum fuer die Optionen im Konfigurationsmodus                         */
 /************************************************************************/
 typedef enum {
     confChoiceDisp, confChoiceTime, confChoiceSpeed, confChoiceExit
 } configChoice_t;
 
-// Todo Dirk (oder Alex)
-
+/************************************************************************/
+/* Enum fuer eine Transaktionssequenz des OneWire Protokolls            */
+/************************************************************************/
 typedef enum {
     convert, read
 } transaction_t;
 
 /************************************************************************/
-/* Struct zur Verwaltung einer Uhrzeit                                  */
+/* Struct zur Verwaltung der Uhrzeit                                    */
 /************************************************************************/
 typedef struct stime {
     uint8_t hour;
@@ -61,16 +62,16 @@ typedef struct stime {
 } smhTime_t;
 
 /************************************************************************/
-/* Eine Messung                                                         */
+/* Struct fuer eine Messung                                             */
 /************************************************************************/
 typedef struct measuringSet {
-    int16_t temp; // -55 to +125 °C
+    int16_t temp; // -55 bis +125 °C
     uint8_t hum;
     smhTime_t time;
 } measuringSet_t;
 
 /************************************************************************/
-/* Status des Systems                                                   */
+/* Struct fuer den Systemstatus                                         */
 /************************************************************************/
 typedef struct state {
     display_t displayMode;
