@@ -35,8 +35,8 @@
 void initButton(void);
 
 /************************************************************************/
-/* Prueft, ob ein Button gepresst wurde. Bei wiederholtem Aufruf wird   */
-/* der zuletzt gepruefte Button Zustand ueberschrieben, falls inzwischen*/
+/* Prueft, ob ein Button gedrueckt wurde. Bei wiederholtem Aufruf wird  */
+/* der zuletzt gepruefte Button-Zustand ueberschrieben, falls inzwischen*/
 /* ein neuer Button gedrueckt wurde.                                    */
 /************************************************************************/
 uint8_t isPressed(void);

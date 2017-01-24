@@ -43,7 +43,7 @@ void lookForPressedButton();
 
 #else
 
-// ------------------- Interrups -------------------
+// ------------------- Interrupts -------------------
 
 ISR(PCINT0_vect) {
     if ((BUTTON_PIN & (1 << PINENTER))) { // Lese Enter ein, wenn gedrueckt
@@ -52,7 +52,7 @@ ISR(PCINT0_vect) {
     if ((BUTTON_PIN & (1 << PINCANCEL))) { // Lese Cancel ein, wenn gedrueckt
         lastPressed = cancel;
     }
-    if ((BUTTON_PIN & (1 << PINUP))) { // Lese UP ein, wenn gedrueckt
+    if ((BUTTON_PIN & (1 << PINUP))) { // Lese Up ein, wenn gedrueckt
         lastPressed = up;
     }
     if ((BUTTON_PIN & (1 << PINDOWN))) { // Lese Down ein, wenn gedrueckt
@@ -111,7 +111,7 @@ button_t getButton(void) {
 
 #if POLLING == TRUE
 
-// --------------- Implementation der Helfer Funktionen ---------------
+// --------------- Implementation der Hilfsfunktionen ---------------
 
 char getBit(char id, int position) {
     return (id >> position) & 1;

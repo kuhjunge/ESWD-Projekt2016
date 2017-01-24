@@ -48,11 +48,11 @@ display_t getNextConfigChoice(configChoice_t last, uint8_t reverse);
 /* b = der gedrueckte button (up, down, enter)                          */
 /* speed = der Zeiger auf den letzten Wert - dieser Wert wird angepasst	*/
 /* lastDisp = die letzte Anzeige, wird zurueckgegeben;                  */
-/*              gibt Speed zurueck                                      */
-/*              es sei denn, die Eingabe war Enter, dann wird der neue  */
-/*              display_t Status zurueck gegeben (Config Uebersicht)	*/
-/* next = sorgt, dafuer, dass der neue Wert gespeichert wird und die	*/
-/*	  Anzeige des naechsten Config Bildschirmes durchgefuehrt wird      */
+/*            gibt Speed zurueck                                        */
+/*            es sei denn, die Eingabe war Enter, dann wird der neue    */
+/*            display_t Status zurueck gegeben (Config Uebersicht)	    */
+/* next = sorgt dafuer, dass der neue Wert gespeichert wird und die	    */
+/*        Anzeige des naechsten Config Bildschirmes durchgefuehrt wird  */
 /************************************************************************/
 display_t setSpeed(button_t b, uint8_t *speed, display_t lastDisp, uint8_t *next);
 
@@ -61,10 +61,10 @@ display_t setSpeed(button_t b, uint8_t *speed, display_t lastDisp, uint8_t *next
 /* b = der gedrueckte button (up, down, enter)                          */
 /* nt = der Zeiger auf den letzten Wert - dieser Wert wird angepasst	*/
 /* lastDisp = die letzte Anzeige, wird zurueckgegeben; gibt Hours       */
-/*	    zurueck es sei denn, die Eingabe war Enter, dann wird der       */
-/*	    neue display_t Status zurueck gegeben (Minutes)                 */
+/*	          zurueck es sei denn, die Eingabe war Enter, dann wird der */
+/*	          neue display_t Status zurueck gegeben (Minutes)           */
 /* next = sorgt, dafuer, dass die                                       */
-/*	  Anzeige des naechsten Config Bildschirms durchgefuehrt wird       */
+/*	      Anzeige des naechsten Config Bildschirms durchgefuehrt wird   */
 /************************************************************************/
 display_t setHours(button_t b, smhTime_t *nt, display_t lastDisp, uint8_t *next);
 
@@ -73,10 +73,10 @@ display_t setHours(button_t b, smhTime_t *nt, display_t lastDisp, uint8_t *next)
 /* b = der gedrueckte button (up, down, enter)                          */
 /* nt = der Zeiger auf den letzten Wert - dieser Wert wird angepasst	*/
 /* lastDisp = die letzte Anzeige, wird zurueckgegeben; gibt Minutes     */
-/*	zurueck es sei denn, die Eingabe war Enter, dann wird der           */
-/*	neue display_t Status zurueck gegeben (Seconds)                     */
+/*	          zurueck es sei denn, die Eingabe war Enter, dann wird der */
+/*	          neue display_t Status zurueck gegeben (Seconds)           */
 /* next = sorgt, dafuer, dass die                                       */
-/*          Anzeige des naechsten Config Bildschirmes durchgefuehrt wird*/
+/*        Anzeige des naechsten Config Bildschirmes durchgefuehrt wird  */
 /************************************************************************/
 display_t setMinutes(button_t b, smhTime_t *nt, display_t lastDisp, uint8_t *next);
 
@@ -85,10 +85,10 @@ display_t setMinutes(button_t b, smhTime_t *nt, display_t lastDisp, uint8_t *nex
 /* b = der gedrueckte button (up, down, enter)                          */
 /* nt = der Zeiger auf den letzten Wert - dieser Wert wird angepasst	*/
 /* lastDisp = die letzte Anzeige, wird zurueckgegeben; gibt Seconds     */
-/*          zurueck es sei denn, die Eingabe war Enter, dann wird der   */
-/*          neue display_t Status zurueck gegeben (Config uebersicht)	*/
+/*            zurueck es sei denn, die Eingabe war Enter, dann wird der */
+/*            neue display_t Status zurueck gegeben (Config uebersicht)	*/
 /* next = sorgt, dafuer, dass der neue Wert gespeichert wird und die	*/
-/*	  Anzeige des naechsten Config Bildschirmes durchgefuehrt wird      */
+/*	      Anzeige des naechsten Config Bildschirmes durchgefuehrt wird  */
 /************************************************************************/
 display_t setSeconds(button_t b, smhTime_t *nt, display_t lastDisp, uint8_t *next);
 
@@ -97,10 +97,10 @@ display_t setSeconds(button_t b, smhTime_t *nt, display_t lastDisp, uint8_t *nex
 /* b = der gedrueckte button (up, down, enter)                          */
 /* nt = der Zeiger auf den letzten Wert - dieser Wert wird angepasst	*/
 /* lastDisp = die letzte Anzeige, wird zurueckgegeben; gibt dispMode	*/
-/*          zurueck es sei denn, die Eingabe war Enter, dann wird der   */
-/*          neue display_t Status zurueck gegeben (Config uebersicht)	*/
+/*            zurueck es sei denn, die Eingabe war Enter, dann wird der */
+/*            neue display_t Status zurueck gegeben (Config uebersicht)	*/
 /* next = sorgt, dafuer, dass der neue Wert gespeichert wird	und die	*/
-/*	  Anzeige des naechsten Config Bildschirmes durchgefuehrt wird      */
+/*	      Anzeige des naechsten Config Bildschirmes durchgefuehrt wird  */
 /************************************************************************/
 display_t setDisplayMode(button_t b, display_t lastDisp, uint8_t *next, display_t *newDispl);
 
@@ -124,7 +124,7 @@ void manageConfigStates(display_t *lastDisp, button_t b, smhTime_t *newTime,
         uint8_t *goToThermoMode, display_t *newDisplayMode, configChoice_t *confChoice, uint8_t *speed);
 
 /************************************************************************/
-/* Prueft ob Zeit vergangen ist, gibt true zurueck, sollte Zeit         */
+/* Prueft, ob Zeit vergangen ist; gibt true zurueck, sollte Zeit        */
 /* vergangen sein. Orientiert sich an der im System hinterlegten        */
 /* Messgeschwindigkeit                                                  */
 /* start = Sekunden fuer den Start des Vergleichs                       */
@@ -159,7 +159,7 @@ void overviewExit(uint8_t next, configChoice_t * confChoice, display_t * lastDis
 
 /************************************************************************/
 /* (Ausgelagert aus 'manageConfigStates()' )                            */
-/* Zeigt den Display Modus Auswahldialog im Config Menu an              */
+/* Zeigt den Displaymodus Auswahldialog im Config Menu an              */
 /* lastDisp = gibt den neuen Displaymodus zurueck                       */
 /* next = Anhand von Next, wird erkannt, wenn der Displayzustand        */
 /*		  geaendert wird und die Auswahl wird gespeichert               */
@@ -168,7 +168,7 @@ display_t * showConfigDisp(display_t * lastDisp, button_t b, display_t * newDisp
 
 /************************************************************************/
 /* (Ausgelagert aus 'manageConfigStates()' )                            */
-/* Zeigt den Display Modus Auswahldialog im Config Menu an              */
+/* Zeigt den Displaymodus Auswahldialog im Config Menu an              */
 /* newDispplaymode = der neue Displaymodus                              */
 /* next = Anhand von Next, wird erkannt, wenn der Displayzustand        */
 /*		  geaendert wird                                                */
@@ -184,7 +184,7 @@ display_t * showConfigSpeed(display_t * lastDisp, button_t b, uint8_t * speed, u
 
 /************************************************************************/
 /* (Ausgelagert aus 'manageConfigStates()' )                            */
-/* Zeigt den Display Modus Auswahldialog im Config Menu an              */
+/* Zeigt den Displaymodus Auswahldialog im Config Menu an              */
 /* speed = die neue Geschwindigkeit	                                    */
 /* next = Anhand von Next, wird erkannt, wenn der Displayzustand        */
 /*		  geaendert wird                                                */
@@ -200,7 +200,7 @@ display_t * showConfigHours(display_t * lastDisp, button_t b, smhTime_t * newTim
 
 /************************************************************************/
 /* (Ausgelagert aus 'manageConfigStates()' )                            */
-/* Zeigt den Display Modus Auswahldialog im Config Menu an              */
+/* Zeigt den Displaymodus Auswahldialog im Config Menu an              */
 /* newTime = die neue Zeit                                              */
 /* next = Anhand von Next, wird erkannt, wenn der Displayzustand        */
 /*		  geaendert wird                                                */
@@ -216,7 +216,7 @@ display_t * showConfigMinutes(display_t * lastDisp, button_t b, smhTime_t * newT
 
 /************************************************************************/
 /* (Ausgelagert aus 'manageConfigStates()' )                            */
-/* Zeigt den Display Modus Auswahldialog im Config Menu an              */
+/* Zeigt den Displaymodus Auswahldialog im Config Menu an              */
 /* newTime = die neue Zeit                                              */
 /* next = Anhand von Next, wird erkannt, wenn der Displayzustand        */
 /*		  geaendert wird                                                */
@@ -232,7 +232,7 @@ display_t * showConfigSeconds(display_t * lastDisp, button_t b, smhTime_t * newT
 
 /************************************************************************/
 /* (Ausgelagert aus 'manageConfigStates()' )                            */
-/* Zeigt den Display Modus Auswahldialog im Config Menu an              */
+/* Zeigt den Displaymodus Auswahldialog im Config Menu an              */
 /* newTime = die neue Zeit                                              */
 /* next = Anhand von Next, wird erkannt, wenn der Displayzustand        */
 /*		  geaendert wird                                                */
@@ -265,7 +265,7 @@ void thermoMode(void);
 void configMode(void);
 
 /************************************************************************/
-/* Ausf�hren einer Erstkonfiguration des Boards                         */
+/* Ausfuehren einer Erstkonfiguration des Boards                         */
 /************************************************************************/
 void firstRunMode(void);
 
@@ -333,7 +333,7 @@ display_t getNextDispMode(display_t last, uint8_t reverse) {
 }
 
 display_t getNextConfigChoice(configChoice_t last, uint8_t reverse) {
-    switch (last) {// dispTime, dispTimeTemp, dispTempHum, dispTimeTempHum
+    switch (last) {// confChoiceDisp, confChoiceTime, confChoiceSpeed, confChoiceExit
         case confChoiceDisp:
             return (reverse == TRUE) ? confChoiceExit : confChoiceTime;
             break;

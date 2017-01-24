@@ -13,7 +13,7 @@
 #include "buttonControl.h"
 #include "debugFunctions.h"
 
-#define DEFAULT_SPEED 5 // Abfragegeschwindigkeit der Sensoren in Sekunden
+#define DEFAULT_SPEED 1 // Abfragegeschwindigkeit der Sensoren in Sekunden
 #define MAX_SPEED 11 // Langsamste Abfragegeschwindigkeit (bei 11, maximal 10)
 
 /************************************************************************/
