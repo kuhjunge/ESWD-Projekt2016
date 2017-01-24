@@ -35,6 +35,10 @@ void initTemp();
 /* Initialisiert die Hardware, die benoetigt wird, um den				*/
 /* "Luftfeuchtigkeitssensor" auszulesen                                 */
 /* Author : Chris Deter                                                 */
+/* Die verwendete Implementation wurde an die Implementation aus        */
+/* der Atmel Atmega 644pa Dokumentation angelehnt                       */
+/* Atmel AVR126: ADC of megaAVR in Single Ended Mode :                  */
+/* http://www.atmel.com/images/Atmel-8444-ADC-of-megaAVR-in-Single-Ended-Mode_ApplicationNote_AVR126.zip */
 /************************************************************************/
 void initHumidity(void);
 
@@ -53,6 +57,10 @@ void initClima(void) {
 /************************************************************************/
 /* Siehe Header															*/
 /* Author : Chris Deter													*/
+/* Die verwendete Implementation wurde an die Implementation aus        */
+/* der Atmel Atmega 644pa Dokumentation angelehnt                       */
+/* Atmel AVR126: ADC of megaAVR in Single Ended Mode :                  */
+/* http://www.atmel.com/images/Atmel-8444-ADC-of-megaAVR-in-Single-Ended-Mode_ApplicationNote_AVR126.zip */
 /************************************************************************/
 uint8_t getHum(void) {
     uint8_t result = 0;
