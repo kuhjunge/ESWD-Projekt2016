@@ -14,21 +14,15 @@ volatile uint8_t tick;
 
 // ------------------ Definition der Helfer Funktionen ------------------
 
-/************************************************************************/
-/* Initialisiert den Timer Interrupt                                    */
-/************************************************************************/
 void timer1Init(void);
 
-/************************************************************************/
-/* Compare Interrupt A                                                  */
-/* setzt die Zeit eine Sekunde weiter                                   */
-/************************************************************************/
 ISR(TIMER1_COMPA_vect);
 
 // --------- Implementation der im Header definierten Funktionen ---------
 
 /************************************************************************/
-/* Siehe Header	                                                        */
+/* Initialisiert die Zeit Funktionialitaet								*/
+/* (Interrupt und die noetigen Variablen)                               */
 /************************************************************************/
 void initTime(void) {
     sysTime.hour = 0;
@@ -39,7 +33,7 @@ void initTime(void) {
 }
 
 /************************************************************************/
-/* Siehe Header                                                         */
+/* Gibt die aktuelle Zeit zurueck (im smhTime_T struct)                 */
 /************************************************************************/
 smhTime_t getTime(void) {
     while (tick > 0) {
@@ -61,7 +55,7 @@ smhTime_t getTime(void) {
 }
 
 /************************************************************************/
-/* Siehe Header                                                         */
+/* Setzt eine neue Zeit mit Stunde, Minute, Sekunde als Parameter		*/
 /************************************************************************/
 void setTime(uint8_t h, uint8_t m, uint8_t s) {
     sysTime.hour = h;
@@ -72,6 +66,9 @@ void setTime(uint8_t h, uint8_t m, uint8_t s) {
 
 // --------------- Implementation der Hilfsfunktionen ---------------
 
+/************************************************************************/
+/* Initialisiert den Timer Interrupt                                    */
+/************************************************************************/
 void timer1Init(void) {
     cli();
     TCCR1A = 0x00; //CTC ON
@@ -85,6 +82,10 @@ void timer1Init(void) {
     sei();
 }
 
+/************************************************************************/
+/* Compare Interrupt A                                                  */
+/* setzt die Zeit eine Sekunde weiter                                   */
+/************************************************************************/
 ISR(TIMER1_COMPA_vect) {
     TCNT1 = 0x00; // Timer auf 0
     tick++;

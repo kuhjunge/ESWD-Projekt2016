@@ -15,30 +15,14 @@ unsigned char stateButtons = 0; // Speichert den Status der aktuellen Knoepfe
 
 // ------------------- Definition der Hilfsfunktionen -------------------
 
-/************************************************************************/
-/* Gibt das Bit einer bestimmten Stelle im Char zurueck                 */
-/************************************************************************/
 char getBit(char id, int position);
 
-/************************************************************************/
-/* Wechselt die Wertigkeit eines bestimmten Bits im Char                */
-/************************************************************************/
 char toggleBit(char var, char n, char x);
 
-/************************************************************************/
-/* Setzt die Variablen nach einer Eingabe								*/
-/************************************************************************/
 void doChange(char pin, int number);
 
-/************************************************************************/
-/* Prueft, ob sich die Eingabe fuer einen Button geaendert hat und      */
-/* veranlasst doChange()												*/
-/************************************************************************/
 void checkAndDoChange(char pin, int number);
 
-/************************************************************************/
-/* Prueft, ob ein Button gedrueckt wurde fuer ENTER; CANCEL; UP; DOWN	*/
-/************************************************************************/
 void lookForPressedButton();
 
 #else
@@ -65,7 +49,7 @@ ISR(PCINT0_vect) {
 // --------- Implementation der im Header definierten Funktionen ---------
 
 /************************************************************************/
-/* Siehe Header                                                         */
+/* Initialisiert die Buttonports an der HW und die benoetigten Variablen*/
 /************************************************************************/
 void initButton(void) {
     BUTTON_PORT &= BUTTON_INIT;
@@ -82,7 +66,9 @@ void initButton(void) {
 }
 
 /************************************************************************/
-/* Siehe Header                                                         */
+/* Prueft, ob ein Button gedrueckt wurde. Bei wiederholtem Aufruf wird  */
+/* der zuletzt gepruefte Button-Zustand ueberschrieben, falls inzwischen*/
+/* ein neuer Button gedrueckt wurde.                                    */
 /************************************************************************/
 uint8_t isPressed(void) {
 #if POLLING == TRUE
@@ -96,7 +82,9 @@ uint8_t isPressed(void) {
 }
 
 /************************************************************************/
-/* Siehe Header                                                         */
+/* Gibt den zuletzt gedrueckten Button zurueck,                         */
+/* gibt 'none' zurueck wenn keiner gedrueckt wurde.						*/
+/* Konsumiert die letzte Buttoneingabe									*/
 /************************************************************************/
 button_t getButton(void) {
 #if POLLING == TRUE
@@ -113,14 +101,24 @@ button_t getButton(void) {
 
 // --------------- Implementation der Hilfsfunktionen ---------------
 
+
+/************************************************************************/
+/* Gibt das Bit einer bestimmten Stelle im Char zurueck                 */
+/************************************************************************/
 char getBit(char id, int position) {
     return (id >> position) & 1;
 }
 
+/************************************************************************/
+/* Wechselt die Wertigkeit eines bestimmten Bits im Char                */
+/************************************************************************/
 char toggleBit(char var, char n, char x) {
     return var ^= (-x ^ var) & (1 << n);
 }
 
+/************************************************************************/
+/* Setzt die Variablen nach einer Eingabe								*/
+/************************************************************************/
 void doChange(char pin, int number) {
     if (pin != 0) {
         if (number == PINCANCEL) {
@@ -135,6 +133,10 @@ void doChange(char pin, int number) {
     }
 }
 
+/************************************************************************/
+/* Prueft, ob sich die Eingabe fuer einen Button geaendert hat und      */
+/* veranlasst doChange()												*/
+/************************************************************************/
 void checkAndDoChange(char pin, int number) {
     if (getBit(stateButtons, number) != pin) {
         stateButtons = toggleBit(stateButtons, number, pin);
@@ -142,6 +144,9 @@ void checkAndDoChange(char pin, int number) {
     }
 }
 
+/************************************************************************/
+/* Prueft, ob ein Button gedrueckt wurde fuer ENTER; CANCEL; UP; DOWN	*/
+/************************************************************************/
 void lookForPressedButton() {
     checkAndDoChange(getBit(BUTTON_PIN, PINUP), PINUP);
     checkAndDoChange(getBit(BUTTON_PIN, PINDOWN), PINDOWN);

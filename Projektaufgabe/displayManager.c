@@ -10,133 +10,51 @@
 int toggleDisp = 0; // lokale Variable zur Steuerung des Toggle Mode der Anzeige
 uint8_t seconds = 0; // lokale Variable zur Steuerung des Toggle Mode der Anzeige
 
-// ------------------ Definition der Helfer Funktionen ------------------
+// ------------------ Definition der Hilfsfunktionen ------------------
 
-/************************************************************************/
-/* Wandelt eine Integer Zahl in eine Char Represenation der Zahl um     */
-/* der Erste Parameter ist die Eingabe Zahl								*/
-/* der Zweite Parameter ist das Ausgabe Array, welches von der Funktion	*/
-/* auch zurueck gegeben wird.											*/
-/************************************************************************/
 char* itoa(int i, char b[]);
 
-/************************************************************************/
-/* Funtkion zum verschieben eines Chars nach Rechts                     */
-/* Sorgt dafuer, dass die Zahlen korrekt rechtsbuendig ins Display      */
-/* geschrieben werden.													*/
-/* Der erste Parameter ist das zu fuellende Array und der zweite		*/
-/* Parameter gibt die Position im Array an.								*/
-/************************************************************************/
 char* toDRight(char b[], uint8_t fill);
 
-/************************************************************************/
-/* Kopiert die Chars aus 'text' in 'b'									*/
-/************************************************************************/
 void setDText(char b[], char text[]);
 
-/************************************************************************/
-/* Setzt einen Integer Wert in einem Char Array                         */
-/* b[] = Char Array in dem der Wert eingefuegt werden soll				*/
-/* tmpVal =  Der Wert der ins Array eingefuegt werden soll				*/
-/* offset = Position an dem der Wert eingefuegt werden soll				*/
-/* size = Groesse der einzufuegenen Zahl								*/
-/* withZero = boolischer Wert, welcher angibt ob der leere Bereich mit  */
-/* Null aufgefuellt werden soll											*/
-/************************************************************************/
 char* setDVal(char b[], int16_t tmpVal, uint8_t offset, uint8_t size, uint8_t withZero);
 
-/************************************************************************/
-/* Erzeugt die Ausgabe fuer die Temperatur Anzeige Zeile                */
-/* Der erste Parameter ist die Anzeige Zeile des Displays, und der		*/
-/* zweite Parameter ist der Wert, der als Temperatur angezeigt werden	*/
-/* soll																	*/
-/************************************************************************/
 void setDTemp(char b[], int16_t tmpVal);
 
-/************************************************************************/
-/* Erzeugt die Ausgabe fuer die Luftfeuchtigkeit Anzeige Zeile          */
-/* Der erste Parameter ist die Anzeige Zeile des Displays, und der		*/
-/* zweite Parameter ist der Wert, der als Feuchtigkeit angezeigt werden	*/
-/* soll									*/
-/************************************************************************/
 void setDHum(char b[], uint8_t tmpVal);
 
-/************************************************************************/
-/* Erzeugt die Ausgabe fuer die Zeit Anzeige Zeile						*/
-/* Der erste Parameter ist die Anzeige Zeile des Displays, und der      */
-/* zweite Parameter ist der Wert, der als Zeit angezeigt werden	 soll   */
-/************************************************************************/
 void setDTime(char b[], smhTime_t* t);
 
-/************************************************************************/
-/* Erzeugt die Ausgabe fuer die Configuration der Stunden               */
-/* Der erste Parameter ist die Anzeige Zeile des Displays, und der		*/
-/* zweite Parameter ist der Wert, der angezeigt werden soll				*/
-/************************************************************************/
 void setConfigTimeH(char b[], uint8_t tmpVal);
 
-/************************************************************************/
-/* Erzeugt die Ausgabe fuer die Configuration der Minuten               */
-/* Der erste Parameter ist die Anzeige Zeile des Displays, und der		*/
-/* zweite Parameter ist der Wert, der angezeigt werden soll				*/
-/************************************************************************/
 void setConfigTimeM(char b[], uint8_t tmpVal);
 
-/************************************************************************/
-/* Erzeugt die Ausgabe fuer die Configuration der Sekunden              */
-/* Der erste Parameter ist die Anzeige Zeile des Displays, und der		*/
-/* zweite Parameter ist der Wert, der angezeigt werden soll				*/
-/************************************************************************/
 void setConfigTimeS(char b[], uint8_t tmpVal);
 
-/************************************************************************/
-/* Erzeugt die Ausgabe fuer die Anzeige des Auswahlmenus der Optionen   */
-/* Der erste Parameter ist die Anzeige Zeile des Displays, und der      */
-/* zweite Parameter ist der Wert, der angezeigt werden soll		*/
-/************************************************************************/
 void setConfigChoice(char b[], uint8_t tmpVal);
 
-/************************************************************************/
-/* Erzeugt die Ausgabe fuer die Konfiguration des Anzeigemodus          */
-/* Der erste Parameter ist die Anzeige Zeile des Displays, und der      */
-/* zweite Parameter ist der Wert, der angezeigt werden soll				*/
-/************************************************************************/
 void setConfigDisp(char b[], uint8_t tmpVal);
 
-/************************************************************************/
-/* Erzeugt die Ausgabe fuer die Konfiguration des Abfrageintervalls     */
-/* Der erste Parameter ist die Anzeige Zeile des Displays, und der      */
-/* zweite Parameter ist der Wert, der angezeigt werden soll				*/
-/************************************************************************/
 void setConfigSpeed(char b[], uint8_t tmpVal);
 
-/************************************************************************/
-/* Wandelt einen Wert in eine Textausgabe fuer den Displaymodus um      */
-/************************************************************************/
 char* getDispModeText(uint8_t tmpVal);
 
-/************************************************************************/
-/* Wandelt einen Wert in eine Textausgabe fuer das Auswahlmenu  um      */
-/************************************************************************/
 char* getSelectConfigText(uint8_t tmpVal);
 
-/************************************************************************/
-/* (ausgelagert aus : setDisplay                                        */
-/* managt das togglen der Anzeige im "Everything" Anzeige Modus         */
-/************************************************************************/
 void doToggleDisp(char * arr, state_t *stateOfSystem, measuringSet_t *ms, char * arr2);
 
 // --------- Implementation der im Header definierten Funktionen ---------
 
 /************************************************************************/
-/* Siehe Header                                                         */
+/* Initialisiert die Display Komponenten                                */
 /************************************************************************/
 void initDisplay(void) {
     initDisp();
 }
 
 /************************************************************************/
-/* Siehe Header                                                         */
+/* Setzt die Anzeige im normalen Anzeige Modus                          */
 /************************************************************************/
 void setDisplay(measuringSet_t ms, state_t stateOfSystem) {
     char arr[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "                ";
@@ -157,7 +75,7 @@ void setDisplay(measuringSet_t ms, state_t stateOfSystem) {
 }
 
 /************************************************************************/
-/* Siehe Header                                                         */
+/* Setzt die Anzeige im Konfigurationsmodus                             */
 /************************************************************************/
 void setConfStepDisp(display_t displayMode, uint8_t val) {
     char arr[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "CONFIGURATION   ";
@@ -180,8 +98,13 @@ void setConfStepDisp(display_t displayMode, uint8_t val) {
     dispSet(arr, arr2);
 }
 
-// --------------- Implementation der Helfer Funktionen ---------------
+// --------------- Implementation der Hilfsfunktionen ---------------
 
+
+/************************************************************************/
+/* (ausgelagert aus : setDisplay)                                        */
+/* managt das togglen der Anzeige im "Everything" Anzeige Modus         */
+/************************************************************************/
 void doToggleDisp(char * arr, state_t *stateOfSystem, measuringSet_t *ms, char * arr2) {
     if (toggleDisp <= DISPLAY_TOGGLE_TIME_FIRST) {
         setDTime(arr, &stateOfSystem->time);
@@ -204,6 +127,12 @@ void doToggleDisp(char * arr, state_t *stateOfSystem, measuringSet_t *ms, char *
     }
 }
 
+
+/************************************************************************/
+/* Erzeugt die Ausgabe fuer die Zeit Anzeige Zeile						*/
+/* Der erste Parameter ist die Anzeige Zeile des Displays, und der      */
+/* zweite Parameter ist der Wert, der als Zeit angezeigt werden	 soll   */
+/************************************************************************/
 void setDTime(char b[], smhTime_t* t) {
     char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "TIME:     :  :  ";
     setDText(b, text);
@@ -212,6 +141,12 @@ void setDTime(char b[], smhTime_t* t) {
     setDVal(b, t->second, 14, 2, TRUE);
 }
 
+/************************************************************************/
+/* Erzeugt die Ausgabe fuer die Temperatur Anzeige Zeile                */
+/* Der erste Parameter ist die Anzeige Zeile des Displays, und der		*/
+/* zweite Parameter ist der Wert, der als Temperatur angezeigt werden	*/
+/* soll																	*/
+/************************************************************************/
 void setDTemp(char b[], int16_t tmpVal) {
     char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "TEMP:         °C";
     //text[14] = 0xDF; // Versuche das Grad Zeichen korrekt einzusetzen fuer Display
@@ -219,20 +154,39 @@ void setDTemp(char b[], int16_t tmpVal) {
     setDVal(b, tmpVal, 9, 4, FALSE);
 }
 
+/************************************************************************/
+/* Erzeugt die Ausgabe fuer die Luftfeuchtigkeit Anzeige Zeile          */
+/* Der erste Parameter ist die Anzeige Zeile des Displays, und der		*/
+/* zweite Parameter ist der Wert, der als Feuchtigkeit angezeigt werden	*/
+/* soll									*/
+/************************************************************************/
 void setDHum(char b[], uint8_t tmpVal) {
     char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "HUMIDITY:      %";
     setDText(b, text);
     setDVal(b, tmpVal, 12, 3, FALSE);
 }
 
+/************************************************************************/
+/* Erzeugt die Ausgabe fuer die Anzeige des Auswahlmenus der Optionen   */
+/* Der erste Parameter ist die Anzeige Zeile des Displays, und der      */
+/* zweite Parameter ist der Wert, der angezeigt werden soll		*/
+/************************************************************************/
 void setConfigChoice(char b[], uint8_t tmpVal) {
     setDText(b, getSelectConfigText(tmpVal));
 }
 
+/************************************************************************/
+/* Erzeugt die Ausgabe fuer die Konfiguration des Anzeigemodus          */
+/* Der erste Parameter ist die Anzeige Zeile des Displays, und der      */
+/* zweite Parameter ist der Wert, der angezeigt werden soll				*/
+/************************************************************************/
 void setConfigDisp(char b[], uint8_t tmpVal) {
     setDText(b, getDispModeText(tmpVal));
 }
 
+/************************************************************************/
+/* Wandelt einen Wert in eine Textausgabe fuer das Auswahlmenu  um      */
+/************************************************************************/
 char* getSelectConfigText(uint8_t tmpVal) {
     switch (tmpVal) {
         case confChoiceTime:
@@ -251,6 +205,9 @@ char* getSelectConfigText(uint8_t tmpVal) {
     }
 }
 
+/************************************************************************/
+/* Wandelt einen Wert in eine Textausgabe fuer den Displaymodus um      */
+/************************************************************************/
 char* getDispModeText(uint8_t tmpVal) {
     switch (tmpVal) {
         case dispTime:
@@ -268,30 +225,54 @@ char* getDispModeText(uint8_t tmpVal) {
     }
 }
 
+/************************************************************************/
+/* Erzeugt die Ausgabe fuer die Configuration der Stunden               */
+/* Der erste Parameter ist die Anzeige Zeile des Displays, und der		*/
+/* zweite Parameter ist der Wert, der angezeigt werden soll				*/
+/************************************************************************/
 void setConfigTimeH(char b[], uint8_t tmpVal) {
     char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "TIME:        h  ";
     setDText(b, text);
     setDVal(b, tmpVal, 10, 2, TRUE);
 }
 
+/************************************************************************/
+/* Erzeugt die Ausgabe fuer die Configuration der Minuten               */
+/* Der erste Parameter ist die Anzeige Zeile des Displays, und der		*/
+/* zweite Parameter ist der Wert, der angezeigt werden soll				*/
+/************************************************************************/
 void setConfigTimeM(char b[], uint8_t tmpVal) {
     char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "TIME:        Min";
     setDText(b, text);
     setDVal(b, tmpVal, 10, 2, TRUE);
 }
 
+/************************************************************************/
+/* Erzeugt die Ausgabe fuer die Konfiguration des Abfrageintervalls     */
+/* Der erste Parameter ist die Anzeige Zeile des Displays, und der      */
+/* zweite Parameter ist der Wert, der angezeigt werden soll				*/
+/************************************************************************/
 void setConfigSpeed(char b[], uint8_t tmpVal) {
     char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "SPEED:          ";
     setDText(b, text);
     setDVal(b, tmpVal, 10, 2, TRUE);
 }
 
+/************************************************************************/
+/* Erzeugt die Ausgabe fuer die Configuration der Sekunden              */
+/* Der erste Parameter ist die Anzeige Zeile des Displays, und der		*/
+/* zweite Parameter ist der Wert, der angezeigt werden soll				*/
+/************************************************************************/
 void setConfigTimeS(char b[], uint8_t tmpVal) {
     char text[DISPLAY_ARRAY_SIZE_FOR_SOFTWARE] = "TIME:        Sec";
     setDText(b, text);
     setDVal(b, tmpVal, 10, 2, TRUE);
 }
 
+
+/************************************************************************/
+/* Kopiert die Chars aus 'text' in 'b'									*/
+/************************************************************************/
 void setDText(char b[], char text[]) {
     int i;
     for (i = 0; i < DISPLAY_ARRAY_SIZE_FOR_SOFTWARE; i++) {
@@ -299,6 +280,15 @@ void setDText(char b[], char text[]) {
     }
 }
 
+/************************************************************************/
+/* Setzt einen Integer Wert in einem Char Array                         */
+/* b[] = Char Array in dem der Wert eingefuegt werden soll				*/
+/* tmpVal =  Der Wert der ins Array eingefuegt werden soll				*/
+/* offset = Position an dem der Wert eingefuegt werden soll				*/
+/* size = Groesse der einzufuegenen Zahl								*/
+/* withZero = boolischer Wert, welcher angibt ob der leere Bereich mit  */
+/* Null aufgefuellt werden soll											*/
+/************************************************************************/
 char* setDVal(char b[], int16_t tmpVal, uint8_t offset, uint8_t size, uint8_t withZero) {
     char temp[5] = "    ";
     itoa(tmpVal, temp);
@@ -328,6 +318,13 @@ char* setDVal(char b[], int16_t tmpVal, uint8_t offset, uint8_t size, uint8_t wi
     return b;
 }
 
+/************************************************************************/
+/* Funktion zum Verschieben eines Chars nach rechts                     */
+/* Sorgt dafuer, dass die Zahlen korrekt rechtsbuendig ins Display      */
+/* geschrieben werden.													*/
+/* Der erste Parameter ist das zu fuellende Array und der zweite		*/
+/* Parameter gibt die Position im Array an.								*/
+/************************************************************************/
 char* toDRight(char b[], uint8_t fill) {
     char empty = ' ';
     int i;
@@ -340,6 +337,12 @@ char* toDRight(char b[], uint8_t fill) {
     return b;
 }
 
+/************************************************************************/
+/* Wandelt eine Integer Zahl in eine Char Represenation der Zahl um     */
+/* der Erste Parameter ist die Eingabe Zahl								*/
+/* der Zweite Parameter ist das Ausgabe Array, welches von der Funktion	*/
+/* auch zurueck gegeben wird.											*/
+/************************************************************************/
 char* itoa(int i, char b[]) {
     char const digit[] = "0123456789";
     char* p = b;

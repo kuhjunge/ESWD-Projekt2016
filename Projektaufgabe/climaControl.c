@@ -1,5 +1,6 @@
 /*
  * File:   displayControl.c
+ * Author: Alexandra Scheben, Dirk Teschner, Chris Deter
  *
  * Created on 27. November 2016, 14:03
  */
@@ -24,24 +25,9 @@ void OneWireWriteByte(int);
 
 int OneWireReadByte(void);
 
-/************************************************************************/
-/* Initialisiert die Hardware, die benoetigt wird, um den				*/
-/* Temperatursensor auszulesen							                */
-/* Author : Alexandra Scheben, Dirk Teschner                            */
-/************************************************************************/
 void initTemp();
 
-/************************************************************************/
-/* Initialisiert die Hardware, die benoetigt wird, um den				*/
-/* "Luftfeuchtigkeitssensor" auszulesen                                 */
-/* Author : Chris Deter                                                 */
-/* Die verwendete Implementation wurde an die Implementation aus        */
-/* der Atmel Atmega 644pa Dokumentation angelehnt                       */
-/* Atmel AVR126: ADC of megaAVR in Single Ended Mode :                  */
-/* http://www.atmel.com/images/Atmel-8444-ADC-of-megaAVR-in-Single-Ended-Mode_ApplicationNote_AVR126.zip */
-/************************************************************************/
 void initHumidity(void);
-
 
 // --------- Implementation der im Header definierten Funktionen ---------
 
@@ -128,8 +114,13 @@ int16_t getTemp(void) {
 // --------------- Implementation der Hilfsfunktionen ---------------
 
 /************************************************************************/
-/* Dokumentation im Funktionsprototyp									*/
-/* Author : Chris Deter													*/
+/* Initialisiert die Hardware, die benoetigt wird, um den				*/
+/* "Luftfeuchtigkeitssensor" auszulesen                                 */
+/* Author : Chris Deter                                                 */
+/* Die verwendete Implementation wurde an die Implementation aus        */
+/* der Atmel Atmega 644pa Dokumentation angelehnt                       */
+/* Atmel AVR126: ADC of megaAVR in Single Ended Mode :                  */
+/* http://www.atmel.com/images/Atmel-8444-ADC-of-megaAVR-in-Single-Ended-Mode_ApplicationNote_AVR126.zip */
 /************************************************************************/
 void initHumidity(void) {
     cli(); // vor dem Initialisieren Interrupts aus!
@@ -141,13 +132,14 @@ void initHumidity(void) {
 }
 
 /************************************************************************/
-/* Dokumentation im Funktionsprototyp									*/
-/* Author : Alexandra Scheben, Dirk Teschner							*/
+/* Initialisiert die Hardware, die benoetigt wird, um den				*/
+/* Temperatursensor auszulesen							                */
+/* Author : Alexandra Scheben, Dirk Teschner                            */
 /************************************************************************/
 void initTemp() {
     cli();
     // DDR und PORT Register des Temperatursensors werden so eingestellt,
-	// dass der PIN standartmaessig auf logisch 1 gehalten wird
+	// dass der PIN durch einen Pull-Up Widerstand standartmaessig auf logisch 1 gehalten wird
     TEMPDDR |= (TEMPPIN);
     TEMPPORT &= ~(TEMPPIN);
     sei();

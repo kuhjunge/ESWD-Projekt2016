@@ -60,7 +60,8 @@ void initClima(void);
 uint8_t getHum(void);
 
 /************************************************************************/
-/* Gibt die Temperatur um den Faktor 10 groesser zurueck                */
+/* Gibt die Temperatur um den Faktor 10 groesser zurueck, letzte Stelle	*/
+/* steht für Nachkommastelle							                */
 /* Unterstützter Wertebereich des Sensors -55 to +125 °C                */
 /* Rückgabewert zwischen -550 und 1250 als int16                        */
 /************************************************************************/
