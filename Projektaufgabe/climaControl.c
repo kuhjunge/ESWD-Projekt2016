@@ -88,15 +88,15 @@ int16_t getTemp(void) {
 	volatile int8_t temperatureRead = 0;
     volatile float temperature = 0;
 
-    temperatureArray[0] = OneWireReadByte();
-    temperatureArray[1] = OneWireReadByte();
-    temperatureArray[2] = OneWireReadByte();
-    temperatureArray[3] = OneWireReadByte();
-    temperatureArray[4] = OneWireReadByte();
-    temperatureArray[5] = OneWireReadByte();
-    temperatureArray[6] = OneWireReadByte();
-    temperatureArray[7] = OneWireReadByte();
-    temperatureArray[8] = OneWireReadByte();
+    temperatureArray[0] = OneWireReadByte(); // Temperature LSB
+    temperatureArray[1] = OneWireReadByte(); // Temperature MSB
+    temperatureArray[2] = OneWireReadByte(); // User Byte 1
+    temperatureArray[3] = OneWireReadByte(); // User Byte 2
+    temperatureArray[4] = OneWireReadByte(); // Reserved 1
+    temperatureArray[5] = OneWireReadByte(); // Reserved 2
+    temperatureArray[6] = OneWireReadByte(); // COUNT REMAIN
+    temperatureArray[7] = OneWireReadByte(); // COUNT PER °C
+    temperatureArray[8] = OneWireReadByte(); // CRC
 	
 	// Abschneiden des letzten Bits, weil dies nur die Nachkommastelle angibt
 	temperatureRead = temperatureArray[0] >> 1;
